@@ -114,9 +114,9 @@ npm install
 Create a `.env` file in the `backend/` directory:
 
 ```env
-MONGO_URI=mongodb://localhost:27017/pizzahub
+MONGO_URI=mongodb:your_mongodb_uri
 JWT_SECRET=your_jwt_secret_key
-PORT=5000
+PORT=your_port_number
 ```
 
 ### 3. Frontend Setup
@@ -250,9 +250,9 @@ Runs **38 tests** across 7 test suites:
 
 | Variable | Description | Example |
 |---|---|---|
-| `MONGO_URI` | MongoDB connection string | `mongodb://localhost:27017/pizzahub` |
+| `MONGO_URI` | MongoDB connection string | `your_mongo_uri` |
 | `JWT_SECRET` | Secret key for JWT signing | `your_secret_key_here` |
-| `PORT` | Backend server port | `5000` |
+| `PORT` | Backend server port | `your port number` |
 
 ---
 
