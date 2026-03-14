@@ -1,0 +1,103 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+}
+
+.sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s;
+}
+
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.nav-pills .nav-link {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-pills .nav-link.active {
+  background-color: #dc3545 !important;
+}
+
+.table th {
+  white-space: nowrap;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.btn {
+  transition: all 0.2s;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.badge {
+  font-weight: 500;
+}
+
+@media (max-width: 991.98px) {
+  .sidebar {
+    position: fixed !important;
+    z-index: 1050;
+  }
+}
+
+.admin-content {
+  margin-left: 0;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+@media (min-width: 992px) {
+  .admin-content {
+    margin-left: 240px;
+  }
+}
+
+/* Small screen responsive helpers */
+@media (max-width: 575.98px) {
+  .card-title {
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+  }
+
+  .display-5 {
+    font-size: 1.8rem;
+  }
+}
