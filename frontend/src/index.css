@@ -51,6 +51,27 @@ a {
   background: var(--app-navbar-bg);
 }
 
+.app-navbar .navbar-brand,
+.app-navbar .nav-link,
+.app-navbar .navbar-toggler {
+  color: #f8f9fa !important;
+}
+
+.app-navbar .nav-link:hover,
+.app-navbar .nav-link:focus,
+.app-navbar .navbar-brand:hover,
+.app-navbar .navbar-brand:focus {
+  color: #ffffff !important;
+}
+
+.app-navbar .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.app-navbar .navbar-toggler-icon {
+  filter: invert(1);
+}
+
 .app-sidebar {
   background: var(--app-sidebar-bg);
   color: var(--app-sidebar-text);
@@ -77,6 +98,93 @@ a {
 .theme-toggle,
 .theme-sidebar-toggle {
   white-space: nowrap;
+}
+
+.theme-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 96px;
+  height: 31px;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--app-border);
+  border-radius: 0.25rem;
+  background: var(--app-surface);
+  color: var(--app-text);
+  text-decoration: none;
+  box-shadow: var(--app-shadow);
+  cursor: pointer;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.theme-toggle-button:hover,
+.theme-toggle-button:focus {
+  color: var(--app-text);
+  background: var(--app-surface-alt);
+  border-color: #dc3545;
+  text-decoration: none;
+}
+
+.theme-toggle-track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 40px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--app-surface-alt) 78%, var(--app-border));
+  border: 1px solid color-mix(in srgb, var(--app-border) 80%, transparent);
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #dc3545;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.24);
+  transition: transform 0.2s ease;
+}
+
+[data-theme="dark"] .theme-toggle-thumb {
+  transform: translateX(22px);
+}
+
+.theme-toggle-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 0.65rem;
+  line-height: 1;
+}
+
+.theme-toggle-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.app-navbar .theme-toggle-button {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+}
+
+.app-navbar .theme-toggle-button:hover,
+.app-navbar .theme-toggle-button:focus {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.app-navbar .theme-toggle-track {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
 .card,
