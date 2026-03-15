@@ -65,6 +65,7 @@ const order = require("../controllers/UserOrderController");
 const payment = require("../controllers/UserPaymentController");
 const message = require("../controllers/UserMessageController");
 const addressController = require("../controllers/UserAdressController");
+const favorite = require("../controllers/UserFavoriteController");
 
 
 // Auth
@@ -87,6 +88,11 @@ router.get("/cart/:userId", authMiddleware, cart.getCart);
 router.put("/cart/:userId/:itemId", authMiddleware, cart.updateCartQuantity);
 router.delete("/cart/:userId/:itemId", authMiddleware, cart.removeCartItem);
 router.delete("/cart/:userId", authMiddleware, cart.clearCart);
+
+// Favorites
+router.get("/favorites", authMiddleware, favorite.getFavorites);
+router.post("/favorites/:itemId", authMiddleware, favorite.addFavorite);
+router.delete("/favorites/:itemId", authMiddleware, favorite.removeFavorite);
 
 
 // Orders

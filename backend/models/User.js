@@ -26,7 +26,12 @@ const userSchema = new mongoose.Schema(
         type: String,
         enum: ["admin", "customer"],
         default: "customer"
-    }
+    },
+
+    favorites: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "MenuItem"
+    }]
 },
 { timestamps: true }
 );
