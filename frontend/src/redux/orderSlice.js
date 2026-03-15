@@ -134,6 +134,13 @@ const orderSlice = createSlice({
       .addCase(updateOrderStatus.fulfilled, (state, action) => {
         const idx = state.orders.findIndex((o) => o._id === action.payload._id);
         if (idx !== -1) state.orders[idx] = action.payload;
+      })
+      .addCase("auth/logout", (state) => {
+        state.orders = [];
+        state.currentOrder = null;
+        state.loading = false;
+        state.error = null;
+        state.successMessage = null;
       });
   },
 });

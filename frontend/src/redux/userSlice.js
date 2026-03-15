@@ -178,6 +178,14 @@ const userSlice = createSlice({
       })
       .addCase(makePayment.rejected, (state, action) => {
         state.error = action.payload;
+      })
+      .addCase("auth/logout", (state) => {
+        state.users = [];
+        state.addresses = [];
+        state.messages = [];
+        state.loading = false;
+        state.error = null;
+        state.paymentSuccess = null;
       });
   },
 });

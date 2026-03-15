@@ -77,6 +77,13 @@ const adminSlice = createSlice({
       .addCase(generateBill.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase("auth/logout", (state) => {
+        state.dashboard = null;
+        state.revenue = [];
+        state.bill = null;
+        state.loading = false;
+        state.error = null;
       });
   },
 });

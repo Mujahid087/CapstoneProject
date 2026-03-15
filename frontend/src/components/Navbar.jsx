@@ -32,8 +32,12 @@ function Navbar() {
     }, [dispatch, user, role]);
 
     const handleLogout = () => {
-        dispatch(logout());
         navigate("/");
+        // Defer auth state clearing to let the router move to "/" first
+        // This prevents ProtectedRoute from intercepting and redirecting to "/login"
+        setTimeout(() => {
+            dispatch(logout());
+        }, 0);
     };
 
     const unreadCount = messages?.filter(m => !m.isRead).length || 0;

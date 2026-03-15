@@ -91,6 +91,11 @@ const cartSlice = createSlice({
       })
       .addCase(clearCart.fulfilled, (state) => {
         state.items = [];
+      })
+      .addCase("auth/logout", (state) => {
+        state.items = [];
+        state.loading = false;
+        state.error = null;
       });
   },
 });

@@ -52,6 +52,11 @@ const adminNotificationSlice = createSlice({
             .addCase(markNotificationsRead.fulfilled, (state) => {
                 // Instantly sync the UI state to all read status without waiting for network re-fetch
                 state.notifications.forEach(n => n.isRead = true);
+            })
+            .addCase("auth/logout", (state) => {
+                state.notifications = [];
+                state.loading = false;
+                state.error = null;
             });
     }
 });
