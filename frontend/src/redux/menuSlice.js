@@ -25,6 +25,18 @@ export const fetchMenuByCategory = createAsyncThunk(
   }
 );
 
+export const fetchPublicMenuItems = createAsyncThunk(
+  "menu/fetchPublicMenuItems",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await API.get("/user/menu");
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Failed to fetch menu");
+    }
+  }
+);
+
 export const fetchAllMenuItems = createAsyncThunk(
   "menu/fetchAllMenuItems",
   async (_, { rejectWithValue }) => {
@@ -116,6 +128,15 @@ const menuSlice = createSlice({
         state.menuItems = action.payload;
       })
       .addCase(fetchMenuByCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchPublicMenuItems.pending, (state) => { state.loading = true; })
+      .addCase(fetchPublicMenuItems.fulfilled, (state, action) => {
+        state.loading = false;
+        state.menuItems = action.payload;
+      })
+      .addCase(fetchPublicMenuItems.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

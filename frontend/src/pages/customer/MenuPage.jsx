@@ -1,103 +1,180 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories, fetchMenuByCategory } from "../../redux/menuSlice";
+import { fetchCategories, fetchPublicMenuItems } from "../../redux/menuSlice";
 import { addToCart } from "../../redux/cartSlice";
-import { Row, Col, Card, Button, Nav } from "react-bootstrap";
+import { Card, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Loader from "../../components/Loader";
+import PizzaCustomizationModal from "../../components/PizzaCustomizationModal";
+import CategoryTabs from "../../components/CategoryTabs";
+import MenuItemGrid from "../../components/MenuItemGrid";
+import { createSimpleCartItem, isPizzaCategory } from "../../utils/pizzaOptions";
 
-const PLACEHOLDER_IMG = "https://via.placeholder.com/300x180?text=No+Image";
+const PRICE_RANGES = [
+  { value: "all", label: "All Prices" },
+  { value: "under-200", label: "Under Rs.200" },
+  { value: "200-399", label: "Rs.200 - Rs.399" },
+  { value: "400-plus", label: "Rs.400 and above" },
+];
+
+const SORT_OPTIONS = [
+  { value: "popularity", label: "Popularity" },
+  { value: "price-asc", label: "Price: Low to High" },
+  { value: "price-desc", label: "Price: High to Low" },
+];
 
 function MenuPage() {
-    const dispatch = useDispatch();
-    const { categories, menuItems, loading } = useSelector((state) => state.menu);
-    const { user } = useSelector((state) => state.auth);
-    const [activeCategory, setActiveCategory] = useState(null);
+  const dispatch = useDispatch();
+  const { categories, menuItems, loading } = useSelector((state) => state.menu);
+  const { user } = useSelector((state) => state.auth);
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [priceRange, setPriceRange] = useState("all");
+  const [sortBy, setSortBy] = useState("popularity");
+  const [selectedItem, setSelectedItem] = useState(null);
+  const resolvedCategory = activeCategory || categories[0]?._id || null;
 
-    useEffect(() => {
-        dispatch(fetchCategories());
-    }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchCategories());
+    dispatch(fetchPublicMenuItems());
+  }, [dispatch]);
 
-    useEffect(() => {
-        if (categories.length > 0 && !activeCategory) {
-            setActiveCategory(categories[0]._id);
+  const categoryMap = useMemo(
+    () => Object.fromEntries(categories.map((category) => [category._id, category.categoryName])),
+    [categories]
+  );
+
+  const filteredItems = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+    const indexedItems = menuItems.map((item, index) => ({ item, index }));
+
+    return indexedItems
+      .filter(({ item }) => {
+        const matchesSearch =
+          !normalizedSearch ||
+          item.name?.toLowerCase().includes(normalizedSearch) ||
+          item.description?.toLowerCase().includes(normalizedSearch);
+
+        const matchesCategory = !resolvedCategory || item.categoryId === resolvedCategory;
+
+        const price = Number(item.price || 0);
+        const matchesPrice =
+          priceRange === "all" ||
+          (priceRange === "under-200" && price < 200) ||
+          (priceRange === "200-399" && price >= 200 && price < 400) ||
+          (priceRange === "400-plus" && price >= 400);
+
+        return matchesSearch && matchesCategory && matchesPrice;
+      })
+      .sort((left, right) => {
+        if (sortBy === "price-asc") {
+          return left.item.price - right.item.price;
         }
-    }, [categories, activeCategory]);
 
-    useEffect(() => {
-        if (activeCategory) {
-            dispatch(fetchMenuByCategory(activeCategory));
+        if (sortBy === "price-desc") {
+          return right.item.price - left.item.price;
         }
-    }, [dispatch, activeCategory]);
 
-    const handleAddToCart = (item) => {
-        dispatch(
-            addToCart({
-                userId: user.id,
-                items: [{ itemId: item._id, name: item.name, price: item.price, quantity: 1 }],
-                totalAmount: item.price,
-            })
-        );
-        toast.success(`${item.name} added to cart!`);
-    };
+        const leftPopularity = left.item.popularity ?? left.item.ordersCount ?? left.item.rating ?? 0;
+        const rightPopularity = right.item.popularity ?? right.item.ordersCount ?? right.item.rating ?? 0;
 
-    return (
-        <>
-            <h3 className="mb-4">🍕 Our Menu</h3>
+        if (rightPopularity !== leftPopularity) {
+          return rightPopularity - leftPopularity;
+        }
 
-            <Nav variant="pills" className="mb-4 flex-wrap">
-                {categories.map((cat) => (
-                    <Nav.Item key={cat._id}>
-                        <Nav.Link
-                            active={activeCategory === cat._id}
-                            onClick={() => setActiveCategory(cat._id)}
-                            className={activeCategory === cat._id ? "bg-danger border-0" : ""}
-                        >
-                            {cat.categoryName}
-                        </Nav.Link>
-                    </Nav.Item>
-                ))}
-            </Nav>
+        return left.index - right.index;
+      })
+      .map(({ item }) => item);
+  }, [menuItems, priceRange, resolvedCategory, searchTerm, sortBy]);
 
-            {loading ? (
-                <Loader />
-            ) : menuItems.length === 0 ? (
-                <p className="text-muted">No items in this category.</p>
-            ) : (
-                <Row>
-                    {menuItems.map((item) => (
-                        <Col sm={6} md={4} lg={3} className="mb-4" key={item._id}>
-                            <Card className="h-100 shadow-sm border-0">
-                                <Card.Img
-                                    variant="top"
-                                    src={item.image || PLACEHOLDER_IMG}
-                                    style={{ height: "180px", objectFit: "cover" }}
-                                    onError={(e) => { e.target.src = PLACEHOLDER_IMG; }}
-                                />
-                                <Card.Body className="d-flex flex-column">
-                                    <Card.Title className="fs-6">{item.name}</Card.Title>
-                                    <Card.Text className="text-muted small flex-grow-1">
-                                        {item.description || "Delicious pizza item"}
-                                    </Card.Text>
-                                    <div className="d-flex justify-content-between align-items-center mt-2">
-                                        <span className="fw-bold text-danger fs-5">₹{item.price}</span>
-                                        <Button
-                                            variant="outline-danger"
-                                            size="sm"
-                                            onClick={() => handleAddToCart(item)}
-                                            disabled={!item.isAvailable}
-                                        >
-                                            {item.isAvailable ? "Add to Cart" : "Unavailable"}
-                                        </Button>
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    ))}
-                </Row>
-            )}
-        </>
+  const handleAddToCart = (cartItem) => {
+    dispatch(
+      addToCart({
+        userId: user.id,
+        items: [cartItem],
+        totalAmount: cartItem.price,
+      })
     );
+    toast.success(`${cartItem.name} added to cart!`);
+  };
+
+  const handleItemAction = (item) => {
+    const categoryName = categoryMap[item.categoryId] || "";
+
+    if (isPizzaCategory(categoryName)) {
+      setSelectedItem(item);
+      return;
+    }
+
+    handleAddToCart(createSimpleCartItem(item));
+  };
+
+  return (
+    <>
+      <h3 className="mb-4">Our Menu</h3>
+
+      <CategoryTabs
+        categories={categories}
+        activeCategoryId={resolvedCategory}
+        onSelectCategory={setActiveCategory}
+      />
+
+      <Row className="g-3 mb-4">
+        <Col lg={5}>
+          <InputGroup>
+            <InputGroup.Text>Search</InputGroup.Text>
+            <Form.Control
+              placeholder="Find pizzas by name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </InputGroup>
+        </Col>
+        <Col md={6} lg={3}>
+          <Form.Select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
+            {PRICE_RANGES.map((range) => (
+              <option key={range.value} value={range.value}>
+                {range.label}
+              </option>
+            ))}
+          </Form.Select>
+        </Col>
+        <Col md={6} lg={4}>
+          <Form.Select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Form.Select>
+        </Col>
+      </Row>
+
+      {loading ? (
+        <Loader />
+      ) : filteredItems.length === 0 ? (
+        <Card className="shadow-sm border-0 text-center py-5">
+          <Card.Body>
+            <h5 className="text-muted">No items in this category.</h5>
+            <p className="text-muted small mb-0">Try another search term, tab, or price range.</p>
+          </Card.Body>
+        </Card>
+      ) : (
+        <MenuItemGrid
+          items={filteredItems}
+          categoryMap={categoryMap}
+          onItemAction={handleItemAction}
+        />
+      )}
+
+      <PizzaCustomizationModal
+        item={selectedItem}
+        show={Boolean(selectedItem)}
+        onHide={() => setSelectedItem(null)}
+        onConfirm={handleAddToCart}
+      />
+    </>
+  );
 }
 
 export default MenuPage;
