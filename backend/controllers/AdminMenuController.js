@@ -9,6 +9,7 @@ exports.createMenuItem = async (req, res) => {
         itemData.isAvailable = Boolean(itemData.isAvailable) && itemData.stock > 0;
 
         const item = await MenuItem.create(itemData);
+        await item.populate("categoryId");
 
         res.status(201).json(item);
 
@@ -31,21 +32,23 @@ exports.getAllMenuItems = async (req, res) => {
 
 exports.updateMenuItem = async (req, res) => {
     try {
-        const updateData = {
-            ...req.body,
-        };
+        const currentItem = await MenuItem.findById(req.params.id);
+
+        if (!currentItem) {
+            return res.status(404).json({ error: "Menu item not found" });
+        }
+
+        const updateData = { ...req.body };
+
+        if (updateData.categoryId === undefined || updateData.categoryId === null || updateData.categoryId === "") {
+            delete updateData.categoryId;
+        }
 
         if (updateData.stock !== undefined) {
             updateData.stock = Math.max(0, Number(updateData.stock));
         }
 
         if (updateData.stock !== undefined || updateData.isAvailable !== undefined) {
-            const currentItem = await MenuItem.findById(req.params.id);
-
-            if (!currentItem) {
-                return res.status(404).json({ error: "Menu item not found" });
-            }
-
             const nextStock = updateData.stock ?? currentItem.stock;
             const nextAvailable = updateData.isAvailable ?? currentItem.isAvailable;
             updateData.isAvailable = Boolean(nextAvailable) && nextStock > 0;
@@ -55,7 +58,7 @@ exports.updateMenuItem = async (req, res) => {
             req.params.id,
             updateData,
             { new: true }
-        );
+        ).populate("categoryId");
 
         res.json(item);
 
