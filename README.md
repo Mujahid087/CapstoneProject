@@ -8,7 +8,6 @@ A full-stack web application for online pizza ordering, built with **React** (fr
 
 - [Features](#-features)
 - [Technology Stack](#-technology-stack)
-- [Folder Structure](#-folder-structure)
 - [Prerequisites](#-prerequisites)
 - [Installation & Setup](#-installation--setup)
 - [Running the Application](#-running-the-application)
