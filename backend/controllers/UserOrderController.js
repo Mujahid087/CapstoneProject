@@ -1,5 +1,6 @@
 const Order = require("../models/OrderModel");
 const AdminNotification = require("../models/AdminNotificationModel");
+const MenuItem = require("../models/MenuItem");
 
 
 // Place order
@@ -7,6 +8,33 @@ exports.placeOrder = async (req, res) => {
 
 try {
     const { items, addressId, deliveryMode, userId } = req.body;
+    const groupedQuantities = items.reduce((acc, item) => {
+        const itemId = item.itemId.toString();
+        acc[itemId] = (acc[itemId] || 0) + (item.quantity || 0);
+        return acc;
+    }, {});
+    const stockItems = await MenuItem.find({
+        _id: { $in: Object.keys(groupedQuantities) }
+    });
+    const stockMap = new Map(stockItems.map((item) => [item._id.toString(), item]));
+
+    for (const [itemId, requestedQuantity] of Object.entries(groupedQuantities)) {
+        const menuItem = stockMap.get(itemId);
+
+        if (!menuItem) {
+            return res.status(404).json({ message: "Menu item not found" });
+        }
+
+        if (!menuItem.isAvailable || menuItem.stock <= 0) {
+            return res.status(400).json({ message: `${menuItem.name} is out of stock` });
+        }
+
+        if (requestedQuantity > menuItem.stock) {
+            return res.status(400).json({
+                message: `Only ${menuItem.stock} ${menuItem.name} available in stock`,
+            });
+        }
+    }
 
     // 1. Calculate base total price of items
     const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -40,6 +68,13 @@ try {
         // (Legacy fallback) Keep totalAmount populated for safety if other endpoints still rely on it temporarily
         totalAmount: finalPrice 
     });
+
+    for (const [itemId, requestedQuantity] of Object.entries(groupedQuantities)) {
+        const menuItem = stockMap.get(itemId);
+        menuItem.stock = Math.max(0, menuItem.stock - requestedQuantity);
+        menuItem.isAvailable = menuItem.isAvailable && menuItem.stock > 0;
+        await menuItem.save();
+    }
 
     const notification = await AdminNotification.create({
         eventTitle: "New Order",

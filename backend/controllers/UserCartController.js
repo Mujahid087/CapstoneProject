@@ -1,4 +1,5 @@
 const Cart = require("../models/CartItemModel");
+const MenuItem = require("../models/MenuItem");
 
 const buildCartKey = (item) => {
     if (item.cartKey) {
@@ -12,6 +13,18 @@ const buildCartKey = (item) => {
     return [item.itemId, size, crust, extras].join("::");
 };
 
+const getReservedQuantity = (cartItems, itemId, excludedKey = null) =>
+    cartItems.reduce((sum, item) => {
+        const sameItem = item.itemId.toString() === itemId.toString();
+        const sameKey = (item.cartKey || item.itemId.toString()) === excludedKey;
+
+        if (!sameItem || sameKey) {
+            return sum;
+        }
+
+        return sum + (item.quantity || 0);
+    }, 0);
+
 exports.addToCart = async (req, res) => {
     try {
         const { userId, items } = req.body;
@@ -24,6 +37,15 @@ exports.addToCart = async (req, res) => {
                 extras: items[0]?.customization?.extras || [],
             },
         };
+        const menuItem = await MenuItem.findById(newItem.itemId);
+
+        if (!menuItem) {
+            return res.status(404).json({ message: "Menu item not found" });
+        }
+
+        if (!menuItem.isAvailable || menuItem.stock <= 0) {
+            return res.status(400).json({ message: `${menuItem.name} is out of stock` });
+        }
 
         let cart = await Cart.findOne({ userId });
 
@@ -31,6 +53,18 @@ exports.addToCart = async (req, res) => {
             const existingItem = cart.items.find(
                 (i) => (i.cartKey || i.itemId.toString()) === newItem.cartKey
             );
+            const reservedQuantity = getReservedQuantity(
+                cart.items,
+                newItem.itemId,
+                existingItem ? newItem.cartKey : null
+            );
+            const nextQuantity = (existingItem?.quantity || 0) + (newItem.quantity || 1);
+
+            if (reservedQuantity + nextQuantity > menuItem.stock) {
+                return res.status(400).json({
+                    message: `Only ${menuItem.stock} ${menuItem.name} available in stock`,
+                });
+            }
 
             if (existingItem) {
                 existingItem.quantity += newItem.quantity || 1;
@@ -111,6 +145,24 @@ exports.updateCartQuantity = async (req, res) => {
                 (i) => (i.cartKey || i.itemId.toString()) === itemId
             );
             if (item) {
+                const menuItem = await MenuItem.findById(item.itemId);
+
+                if (!menuItem || !menuItem.isAvailable || menuItem.stock <= 0) {
+                    return res.status(400).json({ message: `${item.name} is out of stock` });
+                }
+
+                const reservedQuantity = getReservedQuantity(
+                    cart.items,
+                    item.itemId,
+                    itemId
+                );
+
+                if (reservedQuantity + quantity > menuItem.stock) {
+                    return res.status(400).json({
+                        message: `Only ${menuItem.stock} ${item.name} available in stock`,
+                    });
+                }
+
                 item.quantity = quantity;
             } else {
                 return res.status(404).json({ message: "Item not found in cart" });

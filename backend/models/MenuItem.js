@@ -22,6 +22,13 @@ const menuItemSchema = new mongoose.Schema(
 
     image: String,
 
+    stock: {
+        type: Number,
+        required: true,
+        min: 0,
+        default: 0
+    },
+
     isAvailable: {
         type: Boolean,
         default: true
