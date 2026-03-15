@@ -77,6 +77,7 @@ router.put("/profile", authMiddleware, auth.updateProfile);
 
 // Menu
 router.get("/categories", menu.getCategories);
+router.get("/menu", menu.getAllMenuItems);
 router.get("/menu/:categoryId", menu.getMenuByCategory);
 
 

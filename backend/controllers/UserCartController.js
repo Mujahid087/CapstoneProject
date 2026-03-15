@@ -1,15 +1,35 @@
 const Cart = require("../models/CartItemModel");
 
+const buildCartKey = (item) => {
+    if (item.cartKey) {
+        return item.cartKey;
+    }
+
+    const extras = [...(item.customization?.extras || [])].sort().join("|");
+    const size = item.customization?.size || "Small";
+    const crust = item.customization?.crust || "Thin";
+
+    return [item.itemId, size, crust, extras].join("::");
+};
+
 exports.addToCart = async (req, res) => {
     try {
         const { userId, items } = req.body;
-        const newItem = items[0];
+        const newItem = {
+            ...items[0],
+            cartKey: buildCartKey(items[0]),
+            customization: {
+                size: items[0]?.customization?.size || "Small",
+                crust: items[0]?.customization?.crust || "Thin",
+                extras: items[0]?.customization?.extras || [],
+            },
+        };
 
         let cart = await Cart.findOne({ userId });
 
         if (cart) {
             const existingItem = cart.items.find(
-                (i) => i.itemId.toString() === newItem.itemId
+                (i) => (i.cartKey || i.itemId.toString()) === newItem.cartKey
             );
 
             if (existingItem) {
@@ -56,7 +76,9 @@ exports.removeCartItem = async (req, res) => {
             return res.status(404).json({ message: "Cart not found" });
         }
 
-        cart.items = cart.items.filter((i) => i.itemId.toString() !== itemId);
+        cart.items = cart.items.filter(
+            (i) => (i.cartKey || i.itemId.toString()) !== itemId
+        );
         cart.totalAmount = cart.items.reduce(
             (sum, i) => sum + i.price * i.quantity,
             0
@@ -81,9 +103,13 @@ exports.updateCartQuantity = async (req, res) => {
         }
 
         if (quantity <= 0) {
-            cart.items = cart.items.filter((i) => i.itemId.toString() !== itemId);
+            cart.items = cart.items.filter(
+                (i) => (i.cartKey || i.itemId.toString()) !== itemId
+            );
         } else {
-            const item = cart.items.find((i) => i.itemId.toString() === itemId);
+            const item = cart.items.find(
+                (i) => (i.cartKey || i.itemId.toString()) === itemId
+            );
             if (item) {
                 item.quantity = quantity;
             } else {

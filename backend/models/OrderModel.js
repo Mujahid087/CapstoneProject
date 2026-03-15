@@ -1,13 +1,36 @@
 const mongoose = require("mongoose");
 
+const customizationSchema = new mongoose.Schema(
+    {
+        size: {
+            type: String,
+            default: "Small"
+        },
+        crust: {
+            type: String,
+            default: "Thin"
+        },
+        extras: {
+            type: [String],
+            default: []
+        }
+    },
+    { _id: false }
+);
+
 const orderItemSchema = new mongoose.Schema({
     itemId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "MenuItem"
     },
+    cartKey: String,
     name: String,
     price: Number,
-    quantity: Number
+    quantity: Number,
+    customization: {
+        type: customizationSchema,
+        default: () => ({})
+    }
 });
 
 const orderSchema = new mongoose.Schema(
