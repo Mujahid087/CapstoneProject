@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchCategories, fetchMenuByCategory } from "../redux/menuSlice";
 import { addToCart } from "../redux/cartSlice";
+import { addFavorite, removeFavorite } from "../redux/favoriteSlice";
 import { Container } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
@@ -17,12 +18,14 @@ function LandingPage() {
   const navigate = useNavigate();
   const { categories, menuItems, loading } = useSelector((state) => state.menu);
   const { token, user } = useSelector((state) => state.auth);
+  const favoriteItems = useSelector((state) => state.favorites.items);
   const [activeCategory, setActiveCategory] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const resolvedCategory = activeCategory || categories[0]?._id || null;
   const categoryMap = Object.fromEntries(
     categories.map((category) => [category._id, category.categoryName])
   );
+  const favoriteIds = favoriteItems.map((item) => item._id);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -62,6 +65,25 @@ function LandingPage() {
     handleAddToCart(createSimpleCartItem(item));
   };
 
+  const handleToggleFavorite = (item) => {
+    if (!token) {
+      toast.info("Please login to save favorites");
+      navigate("/login");
+      return;
+    }
+
+    const action = favoriteIds.includes(item._id) ? removeFavorite(item._id) : addFavorite(item._id);
+    dispatch(action).then((res) => {
+      if (res.meta.requestStatus === "fulfilled") {
+        toast.success(
+          favoriteIds.includes(item._id)
+            ? `${item.name} removed from favorites`
+            : `${item.name} added to favorites`
+        );
+      }
+    });
+  };
+
   return (
     <>
       <Navbar />
@@ -92,6 +114,9 @@ function LandingPage() {
             items={menuItems}
             categoryMap={categoryMap}
             onItemAction={handleItemAction}
+            allowFavorites
+            favoriteIds={favoriteIds}
+            onToggleFavorite={handleToggleFavorite}
           />
         )}
       </Container>

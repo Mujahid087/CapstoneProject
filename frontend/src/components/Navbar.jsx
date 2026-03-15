@@ -14,6 +14,7 @@ function Navbar() {
   const { token, role, user } = useSelector((state) => state.auth);
   const { items } = useSelector((state) => state.cart);
   const { messages } = useSelector((state) => state.user);
+  const { items: favoriteItems } = useSelector((state) => state.favorites);
 
   useEffect(() => {
     let socket;
@@ -62,6 +63,9 @@ function Navbar() {
                 </Nav.Link>
                 <Nav.Link as={Link} to="/orders">
                   Orders
+                </Nav.Link>
+                <Nav.Link as={Link} to="/favorites">
+                  Favorites {favoriteItems.length > 0 && <Badge bg="danger" pill>{favoriteItems.length}</Badge>}
                 </Nav.Link>
                 <Nav.Link as={Link} to="/messages" className="position-relative">
                   Messages

@@ -17,6 +17,7 @@ import PaymentPage from "../pages/customer/PaymentPage";
 import CheckoutPage from "../pages/customer/CheckoutPage";
 import ProfilePage from "../pages/customer/ProfilePage";
 import MessagesPage from "../pages/customer/MessagesPage";
+import FavoritesPage from "../pages/customer/FavoritesPage";
 
 import DashboardPage from "../pages/admin/DashboardPage";
 import CategoriesPage from "../pages/admin/CategoriesPage";
@@ -67,6 +68,7 @@ function AppRoutes() {
                 <Route path="/menu" element={<MenuPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/orders" element={<OrdersPage />} />
+                <Route path="/favorites" element={<FavoritesPage />} />
                 <Route path="/payment/:orderId" element={<PaymentPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/profile" element={<ProfilePage />} />

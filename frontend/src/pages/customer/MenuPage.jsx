@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories, fetchPublicMenuItems } from "../../redux/menuSlice";
 import { addToCart } from "../../redux/cartSlice";
+import { addFavorite, removeFavorite } from "../../redux/favoriteSlice";
 import { Card, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Loader from "../../components/Loader";
@@ -9,6 +10,7 @@ import PizzaCustomizationModal from "../../components/PizzaCustomizationModal";
 import CategoryTabs from "../../components/CategoryTabs";
 import MenuItemGrid from "../../components/MenuItemGrid";
 import { createSimpleCartItem, isPizzaCategory } from "../../utils/pizzaOptions";
+import { useNavigate } from "react-router-dom";
 
 const PRICE_RANGES = [
   { value: "all", label: "All Prices" },
@@ -25,8 +27,10 @@ const SORT_OPTIONS = [
 
 function MenuPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { categories, menuItems, loading } = useSelector((state) => state.menu);
-  const { user } = useSelector((state) => state.auth);
+  const { user, token } = useSelector((state) => state.auth);
+  const favoriteItems = useSelector((state) => state.favorites.items);
   const [activeCategory, setActiveCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [priceRange, setPriceRange] = useState("all");
@@ -43,6 +47,7 @@ function MenuPage() {
     () => Object.fromEntries(categories.map((category) => [category._id, category.categoryName])),
     [categories]
   );
+  const favoriteIds = useMemo(() => favoriteItems.map((item) => item._id), [favoriteItems]);
 
   const filteredItems = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -109,6 +114,25 @@ function MenuPage() {
     handleAddToCart(createSimpleCartItem(item));
   };
 
+  const handleToggleFavorite = (item) => {
+    if (!token) {
+      toast.info("Please login to save favorites");
+      navigate("/login");
+      return;
+    }
+
+    const action = favoriteIds.includes(item._id) ? removeFavorite(item._id) : addFavorite(item._id);
+    dispatch(action).then((res) => {
+      if (res.meta.requestStatus === "fulfilled") {
+        toast.success(
+          favoriteIds.includes(item._id)
+            ? `${item.name} removed from favorites`
+            : `${item.name} added to favorites`
+        );
+      }
+    });
+  };
+
   return (
     <>
       <h3 className="mb-4">Our Menu</h3>
@@ -164,6 +188,9 @@ function MenuPage() {
           items={filteredItems}
           categoryMap={categoryMap}
           onItemAction={handleItemAction}
+          allowFavorites
+          favoriteIds={favoriteIds}
+          onToggleFavorite={handleToggleFavorite}
         />
       )}
 
