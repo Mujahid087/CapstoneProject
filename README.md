@@ -252,6 +252,7 @@ Runs **38 tests** across 7 test suites:
 | `JWT_SECRET` | Secret key for JWT signing | `your_secret_key_here` |
 | `PORT` | Backend server port | `your port number` |
 
+
 ---
 
 ## 🏗 Architecture Overview
