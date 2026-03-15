@@ -35,8 +35,9 @@ function CheckoutPage() {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [deliveryMode, setDeliveryMode] = useState("delivery");
   const [showModal, setShowModal] = useState(false);
+  const isDelivery = deliveryMode === "delivery";
   const defaultAddress = addresses.find((address) => address.isDefault) || addresses[0] || null;
-  const activeAddressId = selectedAddress || defaultAddress?._id || null;
+  const activeAddressId = isDelivery ? selectedAddress || defaultAddress?._id || null : null;
 
   useEffect(() => {
     if (user?.id) dispatch(getUserAddresses(user.id));
@@ -52,7 +53,7 @@ function CheckoutPage() {
     discountAmount = Math.round(itemsTotal * 0.05);
   }
 
-  const deliveryFee = deliveryMode === "delivery" ? 50 : 0;
+  const deliveryFee = isDelivery ? 50 : 0;
   const tax = Math.round(itemsTotal * 0.05);
   const totalAmount = itemsTotal - discountAmount + deliveryFee + tax;
 
@@ -68,28 +69,31 @@ function CheckoutPage() {
   };
 
   const handlePlaceOrder = () => {
-    if (!activeAddressId) {
+    if (isDelivery && !activeAddressId) {
       toast.error("Please select a delivery address");
       return;
     }
 
     const allItems = items.flatMap((cart) => (cart.items ? cart.items : [cart]));
-    dispatch(
-      placeOrder({
-        userId: user.id,
-        addressId: activeAddressId,
-        items: allItems.map((item) => ({
-          itemId: item.itemId,
-          cartKey: item.cartKey,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity || 1,
-          customization: item.customization,
-        })),
-        totalAmount,
-        deliveryMode,
-      })
-    ).then((res) => {
+    const orderPayload = {
+      userId: user.id,
+      items: allItems.map((item) => ({
+        itemId: item.itemId,
+        cartKey: item.cartKey,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity || 1,
+        customization: item.customization,
+      })),
+      totalAmount,
+      deliveryMode,
+    };
+
+    if (isDelivery) {
+      orderPayload.addressId = activeAddressId;
+    }
+
+    dispatch(placeOrder(orderPayload)).then((res) => {
       if (res.meta.requestStatus === "fulfilled") {
         dispatch(clearCart(user.id));
         toast.success("Order placed successfully!");
@@ -188,65 +192,78 @@ function CheckoutPage() {
         </Col>
 
         <Col lg={5}>
-          <Card className="shadow-sm border-0 mb-3">
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5 className="mb-0">Select Delivery Address</h5>
-                <Button variant="outline-danger" size="sm" onClick={() => setShowModal(true)}>
-                  + Add New
-                </Button>
-              </div>
-
-              {addrLoading ? (
-                <Loader />
-              ) : addresses.length === 0 ? (
-                <div className="text-center py-4">
-                  <p className="text-muted mb-2">No saved addresses</p>
-                  <Button variant="danger" size="sm" onClick={() => setShowModal(true)}>
-                    + Add Address
+          {isDelivery && (
+            <Card className="shadow-sm border-0 mb-3">
+              <Card.Body>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h5 className="mb-0">Select Delivery Address</h5>
+                  <Button variant="outline-danger" size="sm" onClick={() => setShowModal(true)}>
+                    + Add New
                   </Button>
                 </div>
-              ) : (
-                <div className="d-flex flex-column gap-2">
-                  {addresses.map((addr) => (
-                    <div
-                      key={addr._id}
-                      className={`border rounded p-3 ${activeAddressId === addr._id ? "border-danger bg-light" : ""}`}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => setSelectedAddress(addr._id)}
-                    >
-                      <div className="d-flex align-items-start gap-2">
-                        <BsForm.Check
-                          type="radio"
-                          name="selectedAddr"
-                          checked={activeAddressId === addr._id}
-                          onChange={() => setSelectedAddress(addr._id)}
-                          className="mt-1"
-                        />
-                        <div>
-                          <div className="fw-semibold">
-                            {labelIcons[addr.label] || "Address"} {addr.label || "Home"}
+
+                {addrLoading ? (
+                  <Loader />
+                ) : addresses.length === 0 ? (
+                  <div className="text-center py-4">
+                    <p className="text-muted mb-2">No saved addresses</p>
+                    <Button variant="danger" size="sm" onClick={() => setShowModal(true)}>
+                      + Add Address
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="d-flex flex-column gap-2">
+                    {addresses.map((addr) => (
+                      <div
+                        key={addr._id}
+                        className={`border rounded p-3 ${activeAddressId === addr._id ? "border-danger bg-light" : ""}`}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => setSelectedAddress(addr._id)}
+                      >
+                        <div className="d-flex align-items-start gap-2">
+                          <BsForm.Check
+                            type="radio"
+                            name="selectedAddr"
+                            checked={activeAddressId === addr._id}
+                            onChange={() => setSelectedAddress(addr._id)}
+                            className="mt-1"
+                          />
+                          <div>
+                            <div className="fw-semibold">
+                              {labelIcons[addr.label] || "Address"} {addr.label || "Home"}
+                            </div>
+                            <div className="text-muted small">
+                              {addr.houseNumber}, {addr.street}, {addr.city}, {addr.state} - {addr.pincode}
+                            </div>
+                            {addr.landmark && (
+                              <div className="text-muted small">Near {addr.landmark}</div>
+                            )}
                           </div>
-                          <div className="text-muted small">
-                            {addr.houseNumber}, {addr.street}, {addr.city}, {addr.state} - {addr.pincode}
-                          </div>
-                          {addr.landmark && (
-                            <div className="text-muted small">Near {addr.landmark}</div>
-                          )}
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card.Body>
-          </Card>
+                    ))}
+                  </div>
+                )}
+              </Card.Body>
+            </Card>
+          )}
+
+          {!isDelivery && (
+            <Card className="shadow-sm border-0 mb-3">
+              <Card.Body>
+                <h5 className="mb-2">Pickup Selected</h5>
+                <p className="text-muted small mb-0">
+                  No delivery address is required for pickup orders.
+                </p>
+              </Card.Body>
+            </Card>
+          )}
 
           <Button
             variant="danger"
             size="lg"
             className="w-100 fw-bold"
-            disabled={!activeAddressId || orderLoading}
+            disabled={orderLoading || (isDelivery && !activeAddressId)}
             onClick={handlePlaceOrder}
           >
             {orderLoading ? "Placing Order..." : "Place Order"}
@@ -254,7 +271,7 @@ function CheckoutPage() {
         </Col>
       </Row>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      <Modal show={showModal && isDelivery} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Add New Address</Modal.Title>
         </Modal.Header>
