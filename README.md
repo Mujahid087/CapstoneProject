@@ -15,7 +15,6 @@ A full-stack web application for online pizza ordering, built with **React** (fr
 - [API Endpoints](#-api-endpoints)
 - [Environment Variables](#-environment-variables)
 - [Architecture Overview](#-architecture-overview)
-- [Screenshots](#-screenshots)
 
 ---
 
