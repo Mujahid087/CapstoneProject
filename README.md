@@ -290,11 +290,7 @@ Runs **38 tests** across 7 test suites:
 - **Formik + Yup** for declarative form validation
 - **Axios Interceptors** for auto-attaching tokens and handling 401 errors
 
----
 
-## 👨‍💻 Author
-
-**Mujahid Mahedi**
 
 ---
 
@@ -304,4 +300,10 @@ Runs **38 tests** across 7 test suites:
 - Frontend (Firebase Hosting): https://pizzeria-c9055.web.app
 - Backend (Render): https://capstoneproject-1--0g2z.onrender.com/
 
+
+---
+
+## 👨‍💻 Author
+
+**Mujahid Mahedi**
 
