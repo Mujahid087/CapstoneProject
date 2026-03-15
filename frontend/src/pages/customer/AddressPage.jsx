@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Loader from "../../components/Loader";
 import { formatCustomization } from "../../utils/pizzaOptions";
+import ConfirmActionModal from "../../components/ConfirmActionModal";
 
 const addressSchema = Yup.object({
   houseNumber: Yup.string().required("House number is required"),
@@ -36,6 +37,7 @@ function AddressPage() {
   const [showModal, setShowModal] = useState(false);
   const [editAddress, setEditAddress] = useState(null);
   const [deliveryMode, setDeliveryMode] = useState("delivery");
+  const [confirmDeleteAddressId, setConfirmDeleteAddressId] = useState(null);
 
   useEffect(() => {
     if (user?.id) dispatch(getUserAddresses(user.id));
@@ -62,11 +64,16 @@ function AddressPage() {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Delete this address?")) {
-      dispatch(deleteAddress(id)).then((res) => {
-        if (res.meta.requestStatus === "fulfilled") toast.success("Address deleted");
-      });
-    }
+    setConfirmDeleteAddressId(id);
+  };
+
+  const confirmDelete = () => {
+    dispatch(deleteAddress(confirmDeleteAddressId)).then((res) => {
+      if (res.meta.requestStatus === "fulfilled") {
+        toast.success("Address deleted");
+      }
+      setConfirmDeleteAddressId(null);
+    });
   };
 
   const handlePlaceOrder = (addressId) => {
@@ -218,6 +225,15 @@ function AddressPage() {
           </Formik>
         </Modal.Body>
       </Modal>
+
+      <ConfirmActionModal
+        show={Boolean(confirmDeleteAddressId)}
+        title="Confirm Action"
+        message="Are you sure you want to delete this address?"
+        confirmLabel="Delete"
+        onConfirm={confirmDelete}
+        onHide={() => setConfirmDeleteAddressId(null)}
+      />
     </>
   );
 }

@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { getUserOrders, cancelOrder } from "../../redux/orderSlice";
 import { generateBill, clearBill } from "../../redux/adminSlice";
 import Loader from "../../components/Loader";
+import ConfirmActionModal from "../../components/ConfirmActionModal";
 
 const statusVariant = {
     pending: "warning",
@@ -63,6 +64,7 @@ function OrdersPage() {
     const { user } = useSelector((state) => state.auth);
     const [showBill, setShowBill] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [confirmCancelOrderId, setConfirmCancelOrderId] = useState(null);
     const billRef = useRef();
 
     useEffect(() => {
@@ -72,13 +74,16 @@ function OrdersPage() {
     }, [dispatch, user]);
 
     const handleCancel = (id) => {
-        if (window.confirm("Are you sure you want to cancel this order?")) {
-            dispatch(cancelOrder(id)).then((res) => {
-                if (res.meta.requestStatus === "fulfilled") {
-                    toast.success("Order cancelled successfully");
-                }
-            });
-        }
+        setConfirmCancelOrderId(id);
+    };
+
+    const confirmCancel = () => {
+        dispatch(cancelOrder(confirmCancelOrderId)).then((res) => {
+            if (res.meta.requestStatus === "fulfilled") {
+                toast.success("Order cancelled successfully");
+            }
+            setConfirmCancelOrderId(null);
+        });
     };
 
     const handleViewBill = (orderId) => {
@@ -400,6 +405,15 @@ function OrdersPage() {
                     <Button variant="danger" onClick={handlePrint}>Print / Download Bill</Button>
                 </Modal.Footer>
             </Modal>
+
+            <ConfirmActionModal
+                show={Boolean(confirmCancelOrderId)}
+                title="Confirm Action"
+                message="Are you sure you want to cancel this order?"
+                confirmLabel="Cancel Order"
+                onConfirm={confirmCancel}
+                onHide={() => setConfirmCancelOrderId(null)}
+            />
         </>
     );
 }

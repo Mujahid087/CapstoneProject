@@ -12,6 +12,7 @@ import { Card, Button, Alert, Row, Col, Modal } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import API from "../../services/api";
 import Loader from "../../components/Loader";
+import ConfirmActionModal from "../../components/ConfirmActionModal";
 
 const profileSchema = Yup.object({
     name: Yup.string().min(2, "Name too short"),
@@ -44,6 +45,7 @@ function ProfilePage() {
     const [showForm, setShowForm] = useState(false);
     const [showAddrModal, setShowAddrModal] = useState(false);
     const [editAddress, setEditAddress] = useState(null);
+    const [confirmDeleteAddressId, setConfirmDeleteAddressId] = useState(null);
 
     useEffect(() => {
         dispatch(clearAuthError());
@@ -93,9 +95,12 @@ function ProfilePage() {
     };
 
     const handleDeleteAddress = (id) => {
-        if (window.confirm("Delete this address?")) {
-            dispatch(deleteAddress(id));
-        }
+        setConfirmDeleteAddressId(id);
+    };
+
+    const confirmDeleteAddress = () => {
+        dispatch(deleteAddress(confirmDeleteAddressId));
+        setConfirmDeleteAddressId(null);
     };
 
     const handleSetDefaultAddress = (addr) => {
@@ -347,6 +352,15 @@ function ProfilePage() {
                     </Formik>
                 </Modal.Body>
             </Modal>
+
+            <ConfirmActionModal
+                show={Boolean(confirmDeleteAddressId)}
+                title="Confirm Action"
+                message="Are you sure you want to delete this address?"
+                confirmLabel="Delete"
+                onConfirm={confirmDeleteAddress}
+                onHide={() => setConfirmDeleteAddressId(null)}
+            />
         </>
     );
 }

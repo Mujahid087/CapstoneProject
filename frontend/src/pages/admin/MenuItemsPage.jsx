@@ -10,6 +10,7 @@ import {
 import { Table, Button, Modal, Form, Badge, InputGroup } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Loader from "../../components/Loader";
+import ConfirmActionModal from "../../components/ConfirmActionModal";
 
 function MenuItemsPage() {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ function MenuItemsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [search, setSearch] = useState("");
+  const [confirmDeleteItemId, setConfirmDeleteItemId] = useState(null);
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -81,11 +83,14 @@ function MenuItemsPage() {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Delete this menu item?")) {
-      dispatch(deleteMenuItem(id)).then((res) => {
-        if (res.meta.requestStatus === "fulfilled") toast.success("Menu item deleted");
-      });
-    }
+    setConfirmDeleteItemId(id);
+  };
+
+  const confirmDelete = () => {
+    dispatch(deleteMenuItem(confirmDeleteItemId)).then((res) => {
+      if (res.meta.requestStatus === "fulfilled") toast.success("Menu item deleted");
+      setConfirmDeleteItemId(null);
+    });
   };
 
   const filteredItems = allMenuItems.filter(
@@ -234,6 +239,15 @@ function MenuItemsPage() {
           </Form>
         </Modal.Body>
       </Modal>
+
+      <ConfirmActionModal
+        show={Boolean(confirmDeleteItemId)}
+        title="Confirm Action"
+        message="Are you sure you want to delete this menu item?"
+        confirmLabel="Delete"
+        onConfirm={confirmDelete}
+        onHide={() => setConfirmDeleteItemId(null)}
+      />
     </>
   );
 }
