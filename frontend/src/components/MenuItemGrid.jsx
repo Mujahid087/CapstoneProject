@@ -19,6 +19,7 @@ function MenuItemGrid({
       {items.map((item) => {
         const isPizza = isPizzaCategory(categoryMap[item.categoryId] || "");
         const isFavorite = favoriteIds.includes(item._id);
+        const inStock = item.isAvailable && Number(item.stock || 0) > 0;
         const actionLabel = primaryActionLabel
           ? primaryActionLabel(item, isPizza)
           : isPizza
@@ -32,14 +33,14 @@ function MenuItemGrid({
           <Col sm={6} md={4} lg={3} className="mb-4" key={item._id}>
             <Card className="h-100 shadow-sm border-0">
               <div className="position-relative">
-              <Card.Img
-                variant="top"
-                src={item.image || PLACEHOLDER_IMG}
-                style={{ height: "180px", objectFit: "cover" }}
-                onError={(e) => {
-                  e.target.src = PLACEHOLDER_IMG;
-                }}
-              />
+                <Card.Img
+                  variant="top"
+                  src={item.image || PLACEHOLDER_IMG}
+                  style={{ height: "180px", objectFit: "cover" }}
+                  onError={(e) => {
+                    e.target.src = PLACEHOLDER_IMG;
+                  }}
+                />
                 {allowFavorites && isPizza && onToggleFavorite && (
                   <Button
                     variant="light"
@@ -59,15 +60,22 @@ function MenuItemGrid({
                 <Card.Text className="text-muted small flex-grow-1">
                   {item.description || "Delicious pizza item"}
                 </Card.Text>
+                <div className="small mb-2">
+                  {inStock ? (
+                    <span className="text-success">In Stock: {item.stock}</span>
+                  ) : (
+                    <span className="text-danger fw-semibold">Out of Stock</span>
+                  )}
+                </div>
                 <div className="d-flex justify-content-between align-items-center mt-2">
                   <span className="fw-bold text-danger fs-5">Rs.{item.price}</span>
                   <Button
                     variant="outline-danger"
                     size="sm"
                     onClick={() => onItemAction(item)}
-                    disabled={!item.isAvailable}
+                    disabled={!inStock}
                   >
-                    {item.isAvailable ? actionLabel : "Unavailable"}
+                    {inStock ? actionLabel : "Out of Stock"}
                   </Button>
                 </div>
                 {extraActionLabel && onSecondaryAction && (
