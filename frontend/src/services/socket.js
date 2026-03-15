@@ -1,9 +1,11 @@
 import { io } from "socket.io-client";
 
-// Singleton socket instance — created once, reused everywhere.
-// This prevents duplicate connections when components re-render.
-const socket = io("http://localhost:5000", {
-    autoConnect: false, // Connect manually so we can control timing
+const socketUrl = (import.meta.env.VITE_SOCKET_URL || "http://localhost:5000").replace(/\/+$/, "");
+
+// Singleton socket instance created once and reused everywhere.
+const socket = io(socketUrl, {
+  autoConnect: false,
 });
 
 export default socket;
+

@@ -5,7 +5,7 @@ function ProtectedRoute({ children, allowedRoles }) {
     const { token, role } = useSelector((state) => state.auth);
 
     if (!token) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/" replace />;
     }
 
     if (allowedRoles && !allowedRoles.includes(role)) {

@@ -11,13 +11,13 @@ import socket from "../services/socket";
 function AdminLayout() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { user } = useSelector((state) => state.auth);
+    const { user, role } = useSelector((state) => state.auth);
 
     useEffect(() => {
         // Load existing notifications from DB on mount
         dispatch(fetchAdminNotifications());
 
-        if (user && user.role === "admin") {
+        if (user && role === "admin") {
 
             // ✅ FIX: emit "join_admin_room" INSIDE the "connect" handler.
             // socket.connect() is async — emitting immediately after calling it
@@ -57,11 +57,11 @@ function AdminLayout() {
             socket.off("disconnect");
             socket.disconnect();
         };
-    }, [dispatch, user]);
+    }, [dispatch, user, role]);
 
     const handleLogout = () => {
         dispatch(logout());
-        navigate("/login");
+        navigate("/", { replace: true });
     };
 
     return (
@@ -83,3 +83,4 @@ function AdminLayout() {
 }
 
 export default AdminLayout;
+

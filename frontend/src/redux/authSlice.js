@@ -2,16 +2,18 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../services/api";
 import { jwtDecode } from "jwt-decode";
 
-const token = localStorage.getItem("token");
+const localToken = localStorage.getItem("token");
 let initialUser = null;
 let initialRole = null;
+let validToken = null;
 
-if (token) {
+if (localToken && localToken !== "null" && localToken !== "undefined") {
   try {
-    const decoded = jwtDecode(token);
+    const decoded = jwtDecode(localToken);
     if (decoded.exp * 1000 > Date.now()) {
       initialUser = { id: decoded.id };
       initialRole = decoded.role;
+      validToken = localToken;
     } else {
       localStorage.removeItem("token");
     }
@@ -63,7 +65,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: initialUser,
-    token: token || null,
+    token: validToken || null,
     role: initialRole,
     loading: false,
     error: null,

@@ -31,7 +31,17 @@ function AppRoutes() {
 
     return (
         <Routes>
-            <Route path="/" element={<LandingPage />} />
+            {/* <Route path="/" element={<LandingPage />} /> */}
+            <Route
+    path="/"
+    element={
+        token ? (
+            <Navigate to={role === "admin" ? "/admin/dashboard" : "/menu"} replace />
+        ) : (
+            <LandingPage />
+        )
+    }
+/>
             <Route
                 path="/login"
                 element={

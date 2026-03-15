@@ -301,3 +301,38 @@ Runs **38 tests** across 7 test suites:
 ## 📄 License
 
 This project is developed as part of a capstone project.
+
+---
+
+## Live Deployment
+
+- Frontend (Firebase Hosting): https://pizzeria-c9055.web.app
+- Backend (Render): https://capstoneproject-1--0g2z.onrender.com/
+- Backend API Base: https://capstoneproject-1--0g2z.onrender.com/api
+
+## Deployment Environment Setup
+
+Frontend (`frontend/.env` for production build):
+
+```env
+VITE_API_URL=https://capstoneproject-1--0g2z.onrender.com/api
+VITE_SOCKET_URL=https://capstoneproject-1--0g2z.onrender.com
+```
+
+Frontend example file committed to git:
+
+- `frontend/.env.example`
+
+Backend (`backend/.env`, do not commit):
+
+```env
+MONGO_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+PORT=5000
+```
+
+Security best practice:
+
+- Never commit `.env` files.
+- Commit only `.env.example` with placeholders.
+- Keep secrets in Render/Firebase environment settings.
