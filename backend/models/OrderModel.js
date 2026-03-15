@@ -44,7 +44,7 @@ const orderSchema = new mongoose.Schema(
     addressId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Address",
-        required: true
+        required: false
     },
 
     items: [orderItemSchema],

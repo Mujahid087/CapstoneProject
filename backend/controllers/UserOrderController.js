@@ -8,6 +8,11 @@ exports.placeOrder = async (req, res) => {
 
 try {
     const { items, addressId, deliveryMode, userId } = req.body;
+
+    if (deliveryMode === "delivery" && !addressId) {
+        return res.status(400).json({ message: "Delivery address is required for delivery orders" });
+    }
+
     const groupedQuantities = items.reduce((acc, item) => {
         const itemId = item.itemId.toString();
         acc[itemId] = (acc[itemId] || 0) + (item.quantity || 0);
@@ -58,7 +63,7 @@ try {
     // 5. Create order with all calculated fields
     const order = await Order.create({
         userId,
-        addressId,
+        addressId: deliveryMode === "delivery" ? addressId : undefined,
         items,
         deliveryMode,
         totalPrice,
