@@ -7,6 +7,7 @@ import Sidebar from "../components/Sidebar";
 import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import socket from "../services/socket";
+import ThemeToggle from "../components/ThemeToggle";
 
 function AdminLayout() {
     const dispatch = useDispatch();
@@ -68,13 +69,16 @@ function AdminLayout() {
         <div className="d-flex">
             <Sidebar />
             <div className="admin-content w-100">
-                <div className="bg-white shadow-sm d-flex justify-content-between align-items-center px-4 py-2">
+                <div className="admin-topbar shadow-sm d-flex justify-content-between align-items-center px-4 py-2">
                     <h5 className="mb-0">Pizza Admin</h5>
-                    <Button variant="outline-danger" size="sm" onClick={handleLogout}>
-                        Logout
-                    </Button>
+                    <div className="d-flex align-items-center gap-2">
+                        <ThemeToggle />
+                        <Button variant="outline-danger" size="sm" onClick={handleLogout}>
+                            Logout
+                        </Button>
+                    </div>
                 </div>
-                <div className="p-4 bg-light min-vh-100">
+                <div className="p-4 admin-page-shell min-vh-100">
                     <Outlet />
                 </div>
             </div>

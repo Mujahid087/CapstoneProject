@@ -23,7 +23,7 @@ function Sidebar() {
     return (
         <>
             <button
-                className="btn btn-dark d-lg-none position-fixed top-0 start-0 m-2 z-3"
+                className="btn btn-dark d-lg-none position-fixed top-0 start-0 m-2 z-3 theme-sidebar-toggle"
                 onClick={() => setCollapsed(!collapsed)}
                 style={{ zIndex: 1060 }}
             >
@@ -31,7 +31,7 @@ function Sidebar() {
             </button>
 
             <div
-                className={`sidebar bg-dark text-white vh-100 p-3 ${collapsed ? "d-none" : "d-none d-lg-block"}`}
+                className={`sidebar app-sidebar vh-100 p-3 ${collapsed ? "d-none" : "d-none d-lg-block"}`}
                 style={{ width: "240px", position: "fixed", top: 0, left: 0, zIndex: 1050 }}
             >
                 <h4 className="text-center mb-4 mt-2">🍕 Admin Panel</h4>
@@ -64,7 +64,7 @@ function Sidebar() {
                         onClick={() => setCollapsed(false)}
                     />
                     <div
-                        className="sidebar bg-dark text-white vh-100 p-3 d-lg-none"
+                        className="sidebar app-sidebar vh-100 p-3 d-lg-none"
                         style={{ width: "240px", position: "fixed", top: 0, left: 0, zIndex: 1050 }}
                     >
                         <h4 className="text-center mb-4 mt-2">🍕 Admin Panel</h4>

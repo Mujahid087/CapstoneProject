@@ -5,6 +5,7 @@ import { receiveRealTimeMessage } from "../redux/userSlice";
 import { Navbar as BsNavbar, Nav, Container, Button, Badge } from "react-bootstrap";
 import { useEffect } from "react";
 import { io } from "socket.io-client";
+import ThemeToggle from "./ThemeToggle";
 
 const socketUrl = (import.meta.env.VITE_SOCKET_URL || "http://localhost:5000").replace(/\/+$/, "");
 
@@ -45,7 +46,7 @@ function Navbar() {
   const brandLink = token ? (role === "admin" ? "/admin/dashboard" : "/menu") : "/";
 
   return (
-    <BsNavbar bg="dark" variant="dark" expand="lg" sticky="top" className="shadow-sm">
+    <BsNavbar expand="lg" sticky="top" className="shadow-sm app-navbar">
       <Container>
         <BsNavbar.Brand as={Link} to={brandLink}>
           PizzaHub
@@ -82,6 +83,7 @@ function Navbar() {
             )}
           </Nav>
           <div className="d-flex align-items-center gap-2">
+            <ThemeToggle />
             {token ? (
               <Button variant="outline-light" size="sm" onClick={handleLogout}>
                 Logout
