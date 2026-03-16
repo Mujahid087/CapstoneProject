@@ -39,12 +39,40 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const res = await API.post("/user/login", credentials);
+      return {
+        message: res.data.message,
+        email: res.data.email,
+        requiresOtp: res.data.requiresOtp,
+      };
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Login failed");
+    }
+  }
+);
+
+export const verifyOtp = createAsyncThunk(
+  "auth/verifyOtp",
+  async ({ email, otp }, { rejectWithValue }) => {
+    try {
+      const res = await API.post("/user/verify-otp", { email, otp });
       const { token } = res.data;
       localStorage.setItem("token", token);
       const decoded = jwtDecode(token);
       return { token, user: { id: decoded.id }, role: decoded.role };
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Login failed");
+      return rejectWithValue(err.response?.data?.message || "OTP verification failed");
+    }
+  }
+);
+
+export const resendOtp = createAsyncThunk(
+  "auth/resendOtp",
+  async (email, { rejectWithValue }) => {
+    try {
+      const res = await API.post("/user/resend-otp", { email });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Failed to resend OTP");
     }
   }
 );
@@ -67,6 +95,8 @@ const authSlice = createSlice({
     user: initialUser,
     token: validToken || null,
     role: initialRole,
+    pendingEmail: null,
+    otpRequired: false,
     loading: false,
     error: null,
     successMessage: null,
@@ -76,6 +106,8 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.role = null;
+      state.pendingEmail = null;
+      state.otpRequired = false;
       localStorage.removeItem("token");
     },
     clearAuthError(state) {
@@ -83,6 +115,10 @@ const authSlice = createSlice({
     },
     clearSuccessMessage(state) {
       state.successMessage = null;
+    },
+    clearOtpState(state) {
+      state.pendingEmail = null;
+      state.otpRequired = false;
     },
   },
   extraReducers: (builder) => {
@@ -105,11 +141,39 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
+        state.pendingEmail = action.payload.email;
+        state.otpRequired = Boolean(action.payload.requiresOtp);
+        state.successMessage = action.payload.message;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(verifyOtp.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(verifyOtp.fulfilled, (state, action) => {
+        state.loading = false;
         state.token = action.payload.token;
         state.user = action.payload.user;
         state.role = action.payload.role;
+        state.pendingEmail = null;
+        state.otpRequired = false;
       })
-      .addCase(loginUser.rejected, (state, action) => {
+      .addCase(verifyOtp.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(resendOtp.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resendOtp.fulfilled, (state, action) => {
+        state.loading = false;
+        state.successMessage = action.payload.message;
+      })
+      .addCase(resendOtp.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -128,5 +192,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearAuthError, clearSuccessMessage } = authSlice.actions;
+export const { logout, clearAuthError, clearSuccessMessage, clearOtpState } = authSlice.actions;
 export default authSlice.reducer;

@@ -8,6 +8,7 @@ import CustomerLayout from "../layouts/CustomerLayout";
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
+import OtpVerificationPage from "../pages/OtpVerificationPage";
 import NotFoundPage from "../pages/NotFoundPage";
 
 import MenuPage from "../pages/customer/MenuPage";
@@ -56,6 +57,16 @@ function AppRoutes() {
             <Route
                 path="/register"
                 element={token ? <Navigate to="/menu" replace /> : <RegisterPage />}
+            />
+            <Route
+                path="/verify-otp"
+                element={
+                    token ? (
+                        <Navigate to={role === "admin" ? "/admin/dashboard" : "/menu"} replace />
+                    ) : (
+                        <OtpVerificationPage />
+                    )
+                }
             />
 
             <Route

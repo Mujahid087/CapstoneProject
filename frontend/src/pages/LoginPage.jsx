@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { loginUser, clearAuthError } from "../redux/authSlice";
+import { loginUser, clearAuthError, clearSuccessMessage } from "../redux/authSlice";
 import { Card, Button, Alert, Container, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
@@ -19,13 +19,14 @@ function LoginPage() {
 
     useEffect(() => {
         dispatch(clearAuthError());
+        dispatch(clearSuccessMessage());
     }, [dispatch]);
 
     const handleSubmit = async (values) => {
         const result = await dispatch(loginUser(values));
         if (result.meta.requestStatus === "fulfilled") {
-            toast.success("Login successful!");
-            navigate(result.payload.role === "admin" ? "/admin/dashboard" : "/menu");
+            toast.success("OTP sent to your email.");
+            navigate("/verify-otp", { state: { email: result.payload.email } });
         }
     };
 
@@ -35,7 +36,7 @@ function LoginPage() {
                 <Col md={5}>
                     <Card className="shadow border-0">
                         <Card.Body className="p-4">
-                            <h2 className="text-center mb-1">🍕 PizzaHub</h2>
+                            <h2 className="text-center mb-1">PizzaHub</h2>
                             <p className="text-center text-muted mb-4">Sign in to your account</p>
 
                             {error && <Alert variant="danger">{error}</Alert>}
@@ -75,7 +76,7 @@ function LoginPage() {
                                             className="w-100"
                                             disabled={loading || isSubmitting}
                                         >
-                                            {loading ? "Signing in..." : "Sign In"}
+                                            {loading ? "Sending OTP..." : "Send OTP"}
                                         </Button>
                                     </Form>
                                 )}
