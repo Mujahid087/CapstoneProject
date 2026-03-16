@@ -72,6 +72,11 @@ a {
   filter: invert(1);
 }
 
+.app-navbar .navbar-avatar {
+  cursor: pointer;
+  vertical-align: middle;
+}
+
 .app-sidebar {
   background: var(--app-sidebar-bg);
   color: var(--app-sidebar-text);

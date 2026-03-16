@@ -1,4 +1,4 @@
-function UserAvatar({ name, size = 50 }) {
+function UserAvatar({ name, size = 50, className = "" }) {
     const seed = encodeURIComponent((name || "User").trim() || "User");
     const avatarUrl = `https://api.dicebear.com/9.x/initials/svg?seed=${seed}`;
 
@@ -6,12 +6,12 @@ function UserAvatar({ name, size = 50 }) {
         <img
             src={avatarUrl}
             alt={`${name || "User"} avatar`}
-            className="rounded-full object-cover"
+            className={`rounded-circle ${className}`.trim()}
             style={{
                 width: `${size}px`,
                 height: `${size}px`,
                 minWidth: `${size}px`,
-                borderRadius: "9999px"
+                objectFit: "cover"
             }}
             loading="lazy"
         />
