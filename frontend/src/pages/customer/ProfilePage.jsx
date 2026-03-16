@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import API from "../../services/api";
 import Loader from "../../components/Loader";
 import ConfirmActionModal from "../../components/ConfirmActionModal";
+import UserAvatar from "../../components/UserAvatar";
 
 const profileSchema = Yup.object({
     name: Yup.string().min(2, "Name too short"),
@@ -123,10 +124,9 @@ function ProfilePage() {
                             {profile ? (
                                 <>
                                     <div 
-                                        className="rounded-circle bg-danger text-white d-flex justify-content-center align-items-center fw-bold me-4 shadow-sm" 
-                                        style={{ width: "80px", height: "80px", fontSize: "2.5rem" }}
+                                        className="me-4"
                                     >
-                                        {profile.name.charAt(0).toUpperCase()}
+                                        <UserAvatar name={profile.name} size={80} />
                                     </div>
                                     <div className="flex-grow-1">
                                         <h4 className="mb-0 fw-bold">{profile.name}</h4>
