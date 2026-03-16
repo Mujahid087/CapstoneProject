@@ -39,10 +39,22 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const res = await API.post("/user/login", credentials);
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+        const decoded = jwtDecode(res.data.token);
+        return {
+          message: res.data.message,
+          requiresOtp: false,
+          token: res.data.token,
+          user: { id: decoded.id },
+          role: decoded.role,
+        };
+      }
+
       return {
         message: res.data.message,
         email: res.data.email,
-        requiresOtp: res.data.requiresOtp,
+        requiresOtp: Boolean(res.data.requiresOtp),
       };
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Login failed");
@@ -141,8 +153,19 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.pendingEmail = action.payload.email;
-        state.otpRequired = Boolean(action.payload.requiresOtp);
+        if (action.payload.requiresOtp) {
+          state.pendingEmail = action.payload.email;
+          state.otpRequired = true;
+          state.token = null;
+          state.user = null;
+          state.role = null;
+        } else {
+          state.token = action.payload.token;
+          state.user = action.payload.user;
+          state.role = action.payload.role;
+          state.pendingEmail = null;
+          state.otpRequired = false;
+        }
         state.successMessage = action.payload.message;
       })
       .addCase(loginUser.rejected, (state, action) => {

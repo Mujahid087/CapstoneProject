@@ -36,11 +36,11 @@ describe("LoginPage", () => {
     expect(screen.getByPlaceholderText("Enter your password")).toBeInTheDocument();
   });
 
-  it("renders the Send OTP button", () => {
+  it("renders the Sign In button", () => {
     const store = createMockStore();
     renderLoginPage(store);
 
-    const btn = screen.getByRole("button", { name: /send otp/i });
+    const btn = screen.getByRole("button", { name: /sign in/i });
     expect(btn).toBeInTheDocument();
     expect(btn).not.toBeDisabled();
   });
@@ -57,7 +57,7 @@ describe("LoginPage", () => {
     const store = createMockStore();
     renderLoginPage(store);
 
-    const btn = screen.getByRole("button", { name: /send otp/i });
+    const btn = screen.getByRole("button", { name: /sign in/i });
     fireEvent.click(btn);
 
     await waitFor(() => {
@@ -85,7 +85,7 @@ describe("LoginPage", () => {
     const emailInput = screen.getByPlaceholderText("Enter your email");
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
 
-    const btn = screen.getByRole("button", { name: /send otp/i });
+    const btn = screen.getByRole("button", { name: /sign in/i });
     fireEvent.click(btn);
 
     await waitFor(() => {
@@ -104,6 +104,6 @@ describe("LoginPage", () => {
     const store = createMockStore({ loading: true });
     renderLoginPage(store);
 
-    expect(screen.getByRole("button", { name: /sending otp/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /signing in/i })).toBeDisabled();
   });
 });

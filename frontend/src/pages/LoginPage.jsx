@@ -25,8 +25,13 @@ function LoginPage() {
     const handleSubmit = async (values) => {
         const result = await dispatch(loginUser(values));
         if (result.meta.requestStatus === "fulfilled") {
-            toast.success("OTP sent to your email.");
-            navigate("/verify-otp", { state: { email: result.payload.email } });
+            if (result.payload.requiresOtp) {
+                toast.success("OTP sent to your email.");
+                navigate("/verify-otp", { state: { email: result.payload.email } });
+            } else {
+                toast.success("Login successful!");
+                navigate(result.payload.role === "admin" ? "/admin/dashboard" : "/menu");
+            }
         }
     };
 
@@ -76,7 +81,7 @@ function LoginPage() {
                                             className="w-100"
                                             disabled={loading || isSubmitting}
                                         >
-                                            {loading ? "Sending OTP..." : "Send OTP"}
+                                            {loading ? "Signing in..." : "Sign In"}
                                         </Button>
                                     </Form>
                                 )}
