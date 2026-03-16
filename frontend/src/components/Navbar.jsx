@@ -9,7 +9,7 @@ import ThemeToggle from "./ThemeToggle";
 import API from "../services/api";
 import UserAvatar from "./UserAvatar";
 
-const socketUrl = (import.meta.env.VITE_SOCKET_URL || "http://localhost:5000").replace(/\/+$/, "");
+const socketUrl = (process.env.VITE_SOCKET_URL || "http://localhost:5000").replace(/\/+$/, "");
 
 const AvatarToggle = forwardRef(({ onClick, name, ...props }, ref) => (
   <button

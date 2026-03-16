@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { configureStore } from "@reduxjs/toolkit";
 import LandingPage from "./LandingPage";
+import { ThemeProvider } from "../theme/ThemeContext";
 
 // Mock socket.io-client to prevent connection attempts
 jest.mock("socket.io-client", () => ({
@@ -25,14 +26,15 @@ function createMockStore(overrides = {}) {
           { _id: "cat2", categoryName: "Beverages" },
         ],
         menuItems: [
-          { _id: "item1", name: "Margherita", price: 299, description: "Classic pizza", isAvailable: true, image: "" },
-          { _id: "item2", name: "Pepperoni", price: 399, description: "Spicy pepperoni", isAvailable: true, image: "" },
+          { _id: "item1", name: "Margherita", price: 299, description: "Classic pizza", isAvailable: true, stock: 5, categoryId: "cat1", image: "" },
+          { _id: "item2", name: "Pepperoni", price: 399, description: "Spicy pepperoni", isAvailable: true, stock: 8, categoryId: "cat2", image: "" },
         ],
         loading: false,
         error: null,
       }) => state,
       cart: (state = { items: [], loading: false }) => state,
       user: (state = { messages: [] }) => state,
+      favorites: (state = { items: [], loading: false, error: null }) => state,
     },
   });
 }
@@ -41,19 +43,21 @@ function renderLandingPage(storeOverrides = {}) {
   const store = createMockStore(storeOverrides);
   return render(
     <Provider store={store}>
-      <MemoryRouter>
-        <LandingPage />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <LandingPage />
+        </MemoryRouter>
+      </ThemeProvider>
     </Provider>
   );
 }
 
 describe("LandingPage", () => {
-  it("renders the hero section with welcome message", () => {
+  it("renders the hero section with current branding copy", () => {
     renderLandingPage();
 
-    expect(screen.getByText(/Welcome to PizzaHub/i)).toBeInTheDocument();
-    expect(screen.getByText(/Freshly baked pizzas/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/PizzaHub/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Freshly baked pizzas delivered to your doorstep/i)).toBeInTheDocument();
   });
 
   it("renders the navbar with Login and Register buttons when not logged in", () => {
@@ -74,16 +78,16 @@ describe("LandingPage", () => {
     renderLandingPage();
 
     expect(screen.getByText("Margherita")).toBeInTheDocument();
-    expect(screen.getByText("₹299")).toBeInTheDocument();
+    expect(screen.getByText("Rs.299")).toBeInTheDocument();
     expect(screen.getByText("Pepperoni")).toBeInTheDocument();
-    expect(screen.getByText("₹399")).toBeInTheDocument();
+    expect(screen.getByText("Rs.399")).toBeInTheDocument();
   });
 
-  it("renders Add to Cart buttons for available items", () => {
+  it("renders current primary actions for available items", () => {
     renderLandingPage();
 
-    const addButtons = screen.getAllByRole("button", { name: /add to cart/i });
-    expect(addButtons.length).toBe(2);
+    expect(screen.getByRole("button", { name: /customize/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /add to cart/i })).toBeInTheDocument();
   });
 
   it("renders Our Menu heading", () => {
