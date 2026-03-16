@@ -72,9 +72,47 @@ a {
   filter: invert(1);
 }
 
-.app-navbar .navbar-avatar {
-  cursor: pointer;
-  vertical-align: middle;
+.app-navbar .navbar-profile-toggle {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 50% !important;
+  background: #ff5722;
+  appearance: none;
+  line-height: 1;
+  box-shadow: none;
+}
+
+.app-navbar .navbar-profile-toggle.btn,
+.app-navbar .navbar-profile-toggle.dropdown-toggle {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 50% !important;
+  background: #ff5722;
+}
+
+.app-navbar .navbar-profile-toggle::after {
+  display: none !important;
+}
+
+.app-navbar .navbar-profile-toggle:hover,
+.app-navbar .navbar-profile-toggle:focus,
+.app-navbar .navbar-profile-toggle:active,
+.app-navbar .navbar-profile-toggle.show {
+  background: #e64a19 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+.app-navbar .navbar-profile-initials {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .app-sidebar {

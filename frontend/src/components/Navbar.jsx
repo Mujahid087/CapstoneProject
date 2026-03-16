@@ -7,15 +7,23 @@ import { forwardRef, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import ThemeToggle from "./ThemeToggle";
 import API from "../services/api";
-import UserAvatar from "./UserAvatar";
 
 const socketUrl = (process.env.VITE_SOCKET_URL || "http://localhost:5000").replace(/\/+$/, "");
 
-const AvatarToggle = forwardRef(({ onClick, name, ...props }, ref) => (
+const getInitials = (name) =>
+  (name || "User")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || "")
+    .join("") || "U";
+
+const AvatarToggle = forwardRef(({ onClick, name, className = "", ...props }, ref) => (
   <button
     ref={ref}
     type="button"
-    className="bg-transparent border-0 p-0 d-flex align-items-center"
+    className={`d-flex align-items-center justify-content-center text-white navbar-profile-toggle ${className}`.trim()}
     {...props}
     onClick={(event) => {
       event.preventDefault();
@@ -23,7 +31,7 @@ const AvatarToggle = forwardRef(({ onClick, name, ...props }, ref) => (
     }}
     aria-label="Open profile menu"
   >
-    <UserAvatar name={name} size={36} className="d-block navbar-avatar" />
+    <span className="navbar-profile-initials">{getInitials(name)}</span>
   </button>
 ));
 
