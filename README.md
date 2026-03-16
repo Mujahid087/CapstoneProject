@@ -1,310 +1,348 @@
-# 🍕 PizzaHub — Full-Stack Food Ordering Application
+# PizzaHub
 
-A full-stack web application for online pizza ordering, built with **React** (frontend) and **Node.js + Express + MongoDB** (backend). Supports customer ordering with cart, checkout, payments, and a full admin dashboard for managing menu, orders, revenue, and notifications.
+PizzaHub is a full-stack food ordering application built with React on the frontend and Node.js, Express, and MongoDB on the backend. It supports customer ordering, OTP-based registration flow, password reset by email, real-time notifications, favorites, and an admin dashboard for operations and reporting.
 
----
+## Table of Contents
 
-## 📑 Table of Contents
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation and Setup](#installation-and-setup)
+- [Environment Variables](#environment-variables)
+- [Running the Application](#running-the-application)
+- [Available Scripts](#available-scripts)
+- [Routes](#routes)
+- [API Endpoints](#api-endpoints)
+- [Architecture Overview](#architecture-overview)
+- [Live Deployment](#live-deployment)
+- [Author](#author)
 
-- [Features](#-features)
-- [Technology Stack](#-technology-stack)
-- [Prerequisites](#-prerequisites)
-- [Installation & Setup](#-installation--setup)
-- [Running the Application](#-running-the-application)
-- [Running Tests](#-running-tests)
-- [API Endpoints](#-api-endpoints)
-- [Environment Variables](#-environment-variables)
-- [Architecture Overview](#-architecture-overview)
+## Features
 
----
+### Customer
 
-## ✨ Features
+- Public landing page with categories and menu previews
+- Registration and login with JWT authentication
+- OTP verification and OTP resend flow
+- Forgot-password and reset-password flow with email delivery
+- Browse menu by category and view all menu items
+- Cart add, update, remove, and clear actions
+- Favorites add/remove flow
+- Address management for delivery
+- Checkout, payment, order placement, cancellation, and reorder support
+- Profile management with avatar-based navbar dropdown
+- Real-time user notifications and messaging
+- Bill viewing/printing for orders
 
-### Customer Features
-- 🏠 **Landing Page** — Browse menu and categories without login
-- 🔐 **Authentication** — Register, login, and logout with JWT
-- 📋 **Menu Browsing** — View items by category with images and prices
-- 🛒 **Cart Management** — Add, update quantity, and remove items
-- 🧾 **Checkout** — Select delivery address, view order summary with discount/tax
-- 💳 **Payments** — Pay via Card, UPI, or Cash on Delivery
-- 📦 **Order Tracking** — View order history, cancel pending orders, reorder
-- 🔔 **Real-Time Notifications** — Receive order status updates via Socket.IO
-- 👤 **Profile Management** — Update name, email, phone, password
-- 📍 **Address Management** — Add, edit, delete, set default delivery addresses
-- 🧾 **Bill Generation** — View and print detailed order bills
+### Admin
 
-### Admin Features
-- 📊 **Dashboard** — Order trends, revenue charts, KPI metrics
-- 🍕 **Menu Management** — Create, update, delete menu items
-- 📁 **Category Management** — Create and manage food categories
-- 📦 **Order Management** — View all orders, update order status
-- 💰 **Revenue Analytics** — Monthly revenue breakdown with charts
-- 💬 **Messaging** — Send messages to customers about their orders
-- 🔔 **Real-Time Notifications** — Instant alerts for new orders, payments, cancellations
-- 👥 **User Management** — View all registered users
+- Admin login and protected dashboard routes
+- Menu item CRUD
+- Category creation
+- User listing
+- Order management and status updates
+- Revenue analytics and dashboard summaries
+- Customer messaging
+- Admin notification center
+- Bill generation endpoint
 
-### Additional Features
-- ✅ **Client-Side Validation** — Formik + Yup on all forms
-- 📱 **Responsive Design** — Works on desktop, tablet, and mobile
-- 🔄 **Real-Time Updates** — Socket.IO for instant notifications
-- 🏷️ **Auto Discount** — 5% discount on orders above ₹1000
-- 🧪 **Component & E2E Tests** — Jest + Supertest test suites
+### General
 
----
+- Responsive React Bootstrap UI
+- Redux Toolkit state management
+- Axios API client with interceptors
+- Socket.IO for real-time events
+- Frontend and backend test suites included
 
-## 🛠 Technology Stack
+## Technology Stack
 
 ### Frontend
+
 | Technology | Purpose |
-|---|---|
-| **React 19** | UI library |
-| **Vite** | Build tool & dev server |
-| **React Router v7** | Client-side routing |
-| **Redux Toolkit** | State management |
-| **React Bootstrap** | UI components |
-| **Formik + Yup** | Form handling & validation |
-| **Axios** | HTTP client |
-| **Socket.IO Client** | Real-time communication |
-| **React Toastify** | Toast notifications |
-| **Recharts** | Charts & data visualization |
-| **Jest + React Testing Library** | Component testing |
+| --- | --- |
+| React 19 | UI layer |
+| Vite | Development server and build tool |
+| React Router 7 | Client-side routing |
+| Redux Toolkit | State management |
+| React Bootstrap + Bootstrap 5 | UI components and styling |
+| Formik + Yup | Forms and validation |
+| Axios | API communication |
+| Socket.IO Client | Real-time updates |
+| React Toastify | Notifications |
+| Recharts | Charts |
+| Jest + React Testing Library | Frontend tests |
 
 ### Backend
+
 | Technology | Purpose |
-|---|---|
-| **Node.js** | Runtime |
-| **Express 5** | Web framework |
-| **MongoDB + Mongoose** | Database & ODM |
-| **JWT (jsonwebtoken)** | Authentication |
-| **bcryptjs** | Password hashing |
-| **Socket.IO** | Real-time events |
-| **Mocha + Chai + Supertest** | API & E2E testing |
+| --- | --- |
+| Node.js | Runtime |
+| Express 5 | HTTP server |
+| MongoDB + Mongoose | Database and ODM |
+| JSON Web Token | Authentication |
+| bcrypt | Password hashing |
+| Socket.IO | Real-time messaging |
+| Mocha + Chai + Supertest | Backend and API tests |
+| Brevo API | Transactional email delivery |
 
----
----
+## Project Structure
 
-## 📋 Prerequisites
+```text
+PizzaHub/
+|- frontend/
+|  |- src/
+|  |  |- components/
+|  |  |- layouts/
+|  |  |- pages/
+|  |  |- redux/
+|  |  |- routes/
+|  |  |- services/
+|  |  |- theme/
+|  |- .env.example
+|  |- package.json
+|- backend/
+|  |- config/
+|  |- controllers/
+|  |- middlewares/
+|  |- models/
+|  |- routes/
+|  |- services/
+|  |- tests/
+|  |- .env.example
+|  |- package.json
+|- README.md
+```
 
-Make sure you have the following installed:
+## Prerequisites
 
-- **Node.js** (v18 or later) — [Download](https://nodejs.org/)
-- **MongoDB** (local or cloud via MongoDB Atlas) — [Download](https://www.mongodb.com/)
-- **npm** (comes with Node.js)
-- **Git** — [Download](https://git-scm.com/)
+- Node.js 18 or later
+- npm
+- MongoDB local instance or MongoDB Atlas
+- Git
 
----
+## Installation and Setup
 
-## 🚀 Installation & Setup
-
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone <repository-url>
+cd MujahidMahediCapstoneProject
 ```
 
-### 2. Backend Setup
+### 2. Install backend dependencies
 
 ```bash
 cd backend
 npm install
 ```
 
-Create a `.env` file in the `backend/` directory:
-
-```env
-MONGO_URI=mongodb:your_mongodb_uri
-JWT_SECRET=your_jwt_secret_key
-PORT=your_port_number
-```
-
-### 3. Frontend Setup
+### 3. Install frontend dependencies
 
 ```bash
-cd frontend
+cd ../frontend
 npm install
 ```
 
----
+### 4. Create environment files
 
-## ▶️ Running the Application
+Copy the example files and fill in real values:
 
-### Start the Backend Server
+```bash
+cd ../backend
+copy .env.example .env
+
+cd ../frontend
+copy .env.example .env
+```
+
+On macOS/Linux, use `cp` instead of `copy`.
+
+## Environment Variables
+
+### Backend (`backend/.env`)
+
+| Variable | Required | Description | Example |
+| --- | --- | --- | --- |
+| `PORT` | No | Backend server port | `5000` |
+| `MONGO_URI` | Yes | MongoDB connection string | `mongodb://127.0.0.1:27017/pizzahub` |
+| `JWT_SECRET` | Yes | JWT signing secret | `replace_with_strong_secret` |
+| `BREVO_API_KEY` | For email flows | Brevo API key for OTP/reset emails | `xkeysib-...` |
+| `EMAIL_FROM` | For email flows | Verified sender email or `Name <email>` | `PizzaHub <noreply@example.com>` |
+| `FRONTEND_URL` | Recommended | Base URL used in password reset links | `http://localhost:5173` |
+| `NODE_ENV` | No | Runtime environment | `development` |
+
+### Frontend (`frontend/.env`)
+
+| Variable | Required | Description | Example |
+| --- | --- | --- | --- |
+| `VITE_API_URL` | Recommended | Backend API base URL | `http://localhost:5000/api` |
+| `VITE_SOCKET_URL` | Recommended | Backend Socket.IO server URL | `http://localhost:5000` |
+
+## Running the Application
+
+Start the backend:
 
 ```bash
 cd backend
 npm start
 ```
 
-The backend server starts on `http://localhost:5000`
-
-### Start the Frontend Dev Server
+Start the frontend in a second terminal:
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-The frontend starts on `http://localhost:5180`
+Default local URLs:
 
-### Access the Application
+- Frontend app: `http://localhost:5173`
+- Backend API: `http://localhost:5000`
+- Backend health route: `GET http://localhost:5000/`
 
-| URL | Description |
-|---|---|
-| `http://localhost:5180` | Landing Page (public) |
-| `http://localhost:5180/login` | Customer / Admin Login |
-| `http://localhost:5180/register` | Customer Registration |
-| `http://localhost:5180/admin/dashboard` | Admin Dashboard (requires admin login) |
-| `http://localhost:5000` | Backend API Health Check |
+## Available Scripts
 
----
-
-## 🧪 Running Tests
-
-### Frontend Component Tests (Jest)
+### Frontend
 
 ```bash
 cd frontend
+npm run dev
+npm run build
+npm run preview
+npm run lint
 npm test
 ```
 
-Runs **25 tests** across 4 test suites:
-- `Loader.test.jsx` — Spinner component tests
-- `LoginPage.test.jsx` — Login form, validation, error display
-- `RegisterPage.test.jsx` — Registration form, Yup validation
-- `LandingPage.test.jsx` — Hero section, menu items, categories
-
-### Backend API & E2E Tests (Mocha)
+### Backend
 
 ```bash
 cd backend
+npm start
 npm test
 ```
 
-Runs **38 tests** across 7 test suites:
-- `auth.test.js` — Registration & login API
-- `cart.test.js` — Cart CRUD with auth
-- `menu.test.js` — Public menu access
-- `orders.test.js` — Order placement
-- `revenue.test.js` — Admin revenue/dashboard
-- `e2e.workflow.test.js` — Full user journey (register → login → cart → order → cancel)
-- `e2e.auth.test.js` — Auth validation & protected route access
+## Routes
 
----
+### Frontend routes
 
-## 📡 API Endpoints
+| Route | Access | Description |
+| --- | --- | --- |
+| `/` | Public | Landing page or redirect for logged-in users |
+| `/login` | Public | Customer/admin login |
+| `/register` | Public | Customer registration |
+| `/verify-otp` | Public | OTP verification after registration |
+| `/forgot-password` | Public | Request password reset email |
+| `/reset-password/:token` | Public | Reset password with email token |
+| `/menu` | Customer | Browse menu |
+| `/cart` | Customer | View and manage cart |
+| `/checkout` | Customer | Review order before payment |
+| `/payment/:orderId` | Customer | Complete payment |
+| `/orders` | Customer | View order history |
+| `/favorites` | Customer | View favorite menu items |
+| `/messages` | Customer | View messages and notifications |
+| `/profile` | Customer | View and edit profile |
+| `/admin/dashboard` | Admin | Dashboard summary |
+| `/admin/categories` | Admin | Manage categories |
+| `/admin/menu` | Admin | Manage menu items |
+| `/admin/users` | Admin | View users |
+| `/admin/orders` | Admin | Manage orders |
+| `/admin/revenue` | Admin | Revenue reporting |
+| `/admin/notifications` | Admin | Admin notifications |
 
-### User Routes (`/api/user`)
+## API Endpoints
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/register` | ❌ | Register new user |
-| `POST` | `/login` | ❌ | Login & get JWT token |
-| `POST` | `/logout` | ✅ | Logout user |
-| `GET` | `/profile` | ✅ | Get user profile |
-| `PUT` | `/profile` | ✅ | Update user profile |
-| `GET` | `/categories` | ❌ | Get all food categories |
-| `GET` | `/menu/:categoryId` | ❌ | Get menu items by category |
-| `POST` | `/cart` | ✅ | Add item to cart |
-| `GET` | `/cart/:userId` | ✅ | Get user's cart |
-| `PUT` | `/cart/:userId/:itemId` | ✅ | Update cart item quantity |
-| `DELETE` | `/cart/:userId/:itemId` | ✅ | Remove item from cart |
-| `DELETE` | `/cart/:userId` | ✅ | Clear entire cart |
-| `POST` | `/order` | ✅ | Place a new order |
-| `GET` | `/orders/:userId` | ✅ | Get user's orders |
-| `GET` | `/order/:id` | ✅ | Get single order details |
-| `PUT` | `/order/cancel/:id` | ✅ | Cancel an order |
-| `POST` | `/payment` | ✅ | Process payment |
-| `GET` | `/messages/:userId` | ✅ | Get user notifications |
-| `PUT` | `/messages/:id/read` | ✅ | Mark notification as read |
-| `POST` | `/address` | ✅ | Add delivery address |
-| `GET` | `/address/:userId` | ✅ | Get user's addresses |
-| `PUT` | `/address/:id` | ✅ | Update address |
-| `DELETE` | `/address/:id` | ✅ | Delete address |
-
-### Admin Routes (`/api/admin`)
+### User routes (`/api/user`)
 
 | Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/login` | ❌ | Admin login |
-| `POST` | `/logout` | ✅ | Admin logout |
-| `GET` | `/users` | ✅ | Get all registered users |
-| `POST` | `/menu` | ✅ | Create menu item |
-| `GET` | `/menu` | ✅ | Get all menu items |
-| `PUT` | `/menu/:id` | ✅ | Update menu item |
-| `DELETE` | `/menu/:id` | ✅ | Delete menu item |
-| `POST` | `/category` | ✅ | Create food category |
-| `GET` | `/orders` | ✅ | Get all orders |
-| `PUT` | `/orders/:id` | ✅ | Update order status |
-| `GET` | `/notifications` | ✅ | Get admin notifications |
-| `PUT` | `/notifications/read` | ✅ | Mark notifications as read |
-| `POST` | `/message` | ✅ | Send message to user |
-| `GET` | `/bill/:orderId` | ✅ | Generate order bill |
-| `GET` | `/revenue` | ✅ | Monthly revenue stats |
-| `GET` | `/dashboard` | ✅ | Dashboard analytics |
+| --- | --- | --- | --- |
+| `POST` | `/register` | No | Register a user |
+| `POST` | `/login` | No | Login and receive JWT |
+| `POST` | `/verify-otp` | No | Verify registration OTP |
+| `POST` | `/resend-otp` | No | Resend registration OTP |
+| `POST` | `/forgot-password` | No | Send password reset email |
+| `POST` | `/reset-password/:token` | No | Reset password using token |
+| `POST` | `/logout` | Yes | Logout user |
+| `GET` | `/profile` | Yes | Get current profile |
+| `PUT` | `/profile` | Yes | Update current profile |
+| `GET` | `/categories` | No | Get all categories |
+| `GET` | `/menu` | No | Get all menu items |
+| `GET` | `/menu/:categoryId` | No | Get menu items by category |
+| `POST` | `/cart` | Yes | Add item to cart |
+| `GET` | `/cart/:userId` | Yes | Get cart by user |
+| `PUT` | `/cart/:userId/:itemId` | Yes | Update cart quantity |
+| `DELETE` | `/cart/:userId/:itemId` | Yes | Remove one cart item |
+| `DELETE` | `/cart/:userId` | Yes | Clear cart |
+| `GET` | `/favorites` | Yes | Get favorite items |
+| `POST` | `/favorites/:itemId` | Yes | Add favorite |
+| `DELETE` | `/favorites/:itemId` | Yes | Remove favorite |
+| `POST` | `/order` | Yes | Place order |
+| `PUT` | `/order/cancel/:id` | Yes | Cancel order |
+| `GET` | `/orders/:userId` | Yes | Get user orders |
+| `GET` | `/order/:id` | Yes | Get one order |
+| `POST` | `/payment` | Yes | Submit payment |
+| `GET` | `/messages/:userId` | Yes | Get user messages |
+| `PUT` | `/messages/:id/read` | Yes | Mark message as read |
+| `POST` | `/address` | Yes | Add address |
+| `GET` | `/address/:userId` | Yes | Get user addresses |
+| `PUT` | `/address/:id` | Yes | Update address |
+| `DELETE` | `/address/:id` | Yes | Delete address |
 
----
+### Admin routes (`/api/admin`)
 
-## 🔐 Environment Variables
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| `POST` | `/login` | No | Admin login |
+| `POST` | `/logout` | Yes | Admin logout |
+| `GET` | `/users` | Yes | List users |
+| `POST` | `/menu` | Yes | Create menu item |
+| `GET` | `/menu` | Yes | List all menu items |
+| `PUT` | `/menu/:id` | Yes | Update menu item |
+| `DELETE` | `/menu/:id` | Yes | Delete menu item |
+| `POST` | `/category` | Yes | Create category |
+| `GET` | `/orders` | Yes | List all orders |
+| `PUT` | `/orders/:id` | Yes | Update order status |
+| `GET` | `/notifications` | Yes | Get admin notifications |
+| `PUT` | `/notifications/read` | Yes | Mark admin notifications as read |
+| `POST` | `/message` | Yes | Send a message to a user |
+| `GET` | `/bill/:orderId` | Yes | Generate order bill |
+| `GET` | `/revenue` | Yes | Revenue summary |
+| `GET` | `/dashboard` | Yes | Dashboard analytics |
 
-| Variable | Description | Example |
-|---|---|---|
-| `MONGO_URI` | MongoDB connection string | `your_mongo_uri` |
-| `JWT_SECRET` | Secret key for JWT signing | `your_secret_key_here` |
-| `PORT` | Backend server port | `your port number` |
+## Architecture Overview
 
+```text
+Frontend (React + Redux + React Router)
+  -> Axios API client
+  -> Socket.IO client
+  -> Protected customer/admin layouts
 
----
+Backend (Express + Mongoose)
+  -> Route layer
+  -> Auth middleware
+  -> Controllers
+  -> MongoDB models
+  -> Socket.IO server
 
-## 🏗 Architecture Overview
-
+External services
+  -> MongoDB
+  -> Brevo email API
 ```
-┌──────────────────────────────────────────────────────────┐
-│                     Frontend (React)                      │
-│                                                          │
-│  Pages ──→ Redux Slices ──→ Axios (api.js) ──→ Backend   │
-│                                                          │
-│  Socket.IO Client ←──────────────────── Real-time Events │
-└──────────────────────────┬───────────────────────────────┘
-                           │ HTTP / WebSocket
-┌──────────────────────────▼───────────────────────────────┐
-│                  Backend (Node.js + Express)              │
-│                                                          │
-│  Routes ──→ AuthMiddleware ──→ Controllers ──→ Models    │
-│                                                          │
-│  Socket.IO Server ──────────────────→ Real-time Events   │
-└──────────────────────────┬───────────────────────────────┘
-                           │
-┌──────────────────────────▼───────────────────────────────┐
-│                    MongoDB Database                       │
-│                                                          │
-│  Users │ Categories │ MenuItems │ Cart │ Orders           │
-│  Payments │ Messages │ Addresses │ AdminNotifications     │
-└──────────────────────────────────────────────────────────┘
-```
 
-### Key Design Patterns
+### Key implementation patterns
 
-- **Redux Toolkit** for centralized state management with async thunks
-- **JWT Authentication** with middleware-protected routes
-- **Role-Based Access Control** — `customer` and `admin` roles
-- **Socket.IO Rooms** — Separate rooms for user and admin notifications
-- **Formik + Yup** for declarative form validation
-- **Axios Interceptors** for auto-attaching tokens and handling 401 errors
-
-
-
----
-
+- JWT-based auth with role-aware protected routes
+- Redux Toolkit async thunks for API workflows
+- Axios interceptors for attaching tokens
+- Socket.IO rooms for user-specific and admin-specific notifications
+- Formik and Yup for validated forms
+- Modular controller and route separation on the backend
 
 ## Live Deployment
 
-- Frontend (Firebase Hosting): https://pizzeria-c9055.web.app
-- Backend (Render): https://capstoneproject-1--0g2z.onrender.com/
+- Frontend: https://pizzeria-c9055.web.app
+- Backend: https://capstoneproject-1--0g2z.onrender.com/
 
+## Author
 
----
-
-## 👨‍💻 Author
-
-**Mujahid Mahedi**
-
+Mujahid Mahedi
