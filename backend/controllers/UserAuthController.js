@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { sendWelcomeEmail, sendLoginOtpEmail } = require("../services/emailService");
+const { canSendEmails, sendWelcomeEmail, sendLoginOtpEmail } = require("../services/emailService");
 
 const OTP_EXPIRY_MINUTES = 5;
 
@@ -148,6 +148,12 @@ exports.loginUser = async (req, res) => {
             });
         }
 
+        if (!canSendEmails()) {
+            return res.status(503).json({
+                message: "Email service is not configured. Please contact support."
+            });
+        }
+
         await setAndSendOtp(user);
 
         res.json({
@@ -215,6 +221,16 @@ exports.resendOtp = async (req, res) => {
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.role === "admin") {
+            return res.status(400).json({ message: "Admin login does not use OTP" });
+        }
+
+        if (!canSendEmails()) {
+            return res.status(503).json({
+                message: "Email service is not configured. Please contact support."
+            });
         }
 
         await setAndSendOtp(user);

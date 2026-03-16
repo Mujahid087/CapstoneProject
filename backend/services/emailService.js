@@ -61,6 +61,7 @@ async function sendLoginOtpEmail({ to, username, otp }) {
 }
 
 module.exports = {
+    canSendEmails,
     sendEmail,
     sendWelcomeEmail,
     sendLoginOtpEmail
