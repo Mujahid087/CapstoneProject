@@ -132,6 +132,20 @@ exports.loginUser = async (req, res) => {
             return res.status(401).json({ message: "Invalid credentials" });
         }
 
+        if (user.role === "admin") {
+            user.otp = null;
+            user.otpExpires = null;
+            await user.save();
+
+            const token = generateAuthToken(user);
+
+            return res.json({
+                message: "Login successful",
+                token,
+                requiresOtp: false
+            });
+        }
+
         await setAndSendOtp(user);
 
         res.json({
