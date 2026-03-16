@@ -9,6 +9,8 @@ import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import OtpVerificationPage from "../pages/OtpVerificationPage";
+import ForgotPasswordPage from "../pages/ForgotPasswordPage";
+import ResetPasswordPage from "../pages/ResetPasswordPage";
 import NotFoundPage from "../pages/NotFoundPage";
 
 import MenuPage from "../pages/customer/MenuPage";
@@ -67,6 +69,14 @@ function AppRoutes() {
                         <OtpVerificationPage />
                     )
                 }
+            />
+            <Route
+                path="/forgot-password"
+                element={token ? <Navigate to={role === "admin" ? "/admin/dashboard" : "/menu"} replace /> : <ForgotPasswordPage />}
+            />
+            <Route
+                path="/reset-password/:token"
+                element={token ? <Navigate to={role === "admin" ? "/admin/dashboard" : "/menu"} replace /> : <ResetPasswordPage />}
             />
 
             <Route

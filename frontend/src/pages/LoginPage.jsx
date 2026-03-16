@@ -73,6 +73,9 @@ function LoginPage() {
                                                 placeholder="Enter your password"
                                             />
                                             <ErrorMessage name="password" component="div" className="text-danger small mt-1" />
+                                            <div className="text-end mt-2">
+                                                <Link to="/forgot-password">Forgot Password?</Link>
+                                            </div>
                                         </div>
 
                                         <Button
