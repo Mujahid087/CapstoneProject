@@ -1,47 +1,45 @@
-const nodemailer = require("nodemailer");
-
-const appName = "PizzaHub";
-
-let transporter;
-
 function canSendEmails() {
-    return Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
-}
-
-function getTransporter() {
-    if (!canSendEmails()) {
-        return null;
-    }
-
-    if (!transporter) {
-        transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
-    }
-
-    return transporter;
+    return Boolean(process.env.BREVO_API_KEY && process.env.EMAIL_FROM);
 }
 
 async function sendEmail({ to, subject, text }) {
-    const emailTransporter = getTransporter();
-
-    if (!emailTransporter) {
+    if (!canSendEmails()) {
         if (process.env.NODE_ENV !== "production") {
-            console.warn("[EmailService] EMAIL_USER/EMAIL_PASS missing. Skipping email send.");
+            console.warn("[EmailService] BREVO_API_KEY/EMAIL_FROM missing. Skipping email send.");
         }
         return { skipped: true };
     }
 
-    return emailTransporter.sendMail({
-        from: `"${appName}" <${process.env.EMAIL_USER}>`,
-        to,
-        subject,
-        text
+    const [fromName, fromEmail] = process.env.EMAIL_FROM.includes("<")
+        ? [
+            process.env.EMAIL_FROM.split("<")[0].trim().replace(/^"|"$/g, ""),
+            process.env.EMAIL_FROM.split("<")[1].replace(">", "").trim()
+        ]
+        : ["PizzaHub", process.env.EMAIL_FROM.trim()];
+
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "api-key": process.env.BREVO_API_KEY
+        },
+        body: JSON.stringify({
+            sender: {
+                name: fromName || "PizzaHub",
+                email: fromEmail
+            },
+            to: [{ email: to }],
+            subject,
+            textContent: text
+        })
     });
+
+    if (!response.ok) {
+        const details = await response.text();
+        throw new Error(`Brevo API error (${response.status}): ${details}`);
+    }
+
+    return response.json();
 }
 
 async function sendWelcomeEmail({ to, username }) {
