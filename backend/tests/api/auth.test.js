@@ -25,7 +25,7 @@ describe("Auth API", function() {
             const res = await request(app)
                 .post("/api/user/register")
                 .send(testUser);
-            
+
             expect(res.status).to.equal(201);
             expect(res.body).to.have.property("message", "User registered successfully");
             expect(res.body).to.have.property("user");
@@ -36,27 +36,39 @@ describe("Auth API", function() {
             const res = await request(app)
                 .post("/api/user/register")
                 .send(testUser);
-            
+
             expect(res.status).to.equal(400);
             expect(res.body.message).to.equal("User already exists");
         });
 
-        it("should return 500 for missing required fields", async () => {
+        it("should return 400 for missing required fields", async () => {
             const res = await request(app)
                 .post("/api/user/register")
                 .send({ name: "Incomplete" });
-            
-            // Controller catches Mongoose validation error → 500
-            expect(res.status).to.equal(500);
+
+            expect(res.status).to.equal(400);
         });
     });
 
     describe("POST /api/user/login", () => {
-        it("should login with valid credentials", async () => {
+        it("should validate credentials and send OTP", async () => {
             const res = await request(app)
                 .post("/api/user/login")
                 .send({ email: testUser.email, password: testUser.password });
-            
+
+            expect(res.status).to.equal(200);
+            expect(res.body.message).to.equal("OTP sent to your registered email");
+            expect(res.body).to.have.property("requiresOtp", true);
+            expect(res.body).to.have.property("email", testUser.email);
+        });
+
+        it("should verify OTP and return JWT", async () => {
+            const user = await User.findOne({ email: testUser.email });
+
+            const res = await request(app)
+                .post("/api/user/verify-otp")
+                .send({ email: testUser.email, otp: user.otp });
+
             expect(res.status).to.equal(200);
             expect(res.body).to.have.property("token");
             expect(res.body.message).to.equal("Login successful");
@@ -66,7 +78,7 @@ describe("Auth API", function() {
             const res = await request(app)
                 .post("/api/user/login")
                 .send({ email: "nobody@example.com", password: "wrong" });
-            
+
             expect(res.status).to.equal(404);
         });
 
@@ -74,7 +86,7 @@ describe("Auth API", function() {
             const res = await request(app)
                 .post("/api/user/login")
                 .send({ email: testUser.email, password: "wrongpassword" });
-            
+
             expect(res.status).to.equal(401);
         });
     });

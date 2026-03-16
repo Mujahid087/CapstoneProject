@@ -28,6 +28,16 @@ const userSchema = new mongoose.Schema(
         default: "customer"
     },
 
+    otp: {
+        type: String,
+        default: null
+    },
+
+    otpExpires: {
+        type: Date,
+        default: null
+    },
+
     favorites: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "MenuItem"

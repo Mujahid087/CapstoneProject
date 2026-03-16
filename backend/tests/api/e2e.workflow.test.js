@@ -8,11 +8,11 @@ const Order = require("../../models/OrderModel");
 
 /**
  * End-to-End Test: Full User Workflow
- * 
+ *
  * Tests the complete user journey:
  * 1. Browse menu (public, no auth)
  * 2. Register a new account
- * 3. Login
+ * 3. Login with OTP verification
  * 4. Add items to cart
  * 5. Place an order
  * 6. View orders
@@ -47,8 +47,6 @@ describe("E2E: Full User Workflow", function () {
         }
     });
 
-    // ─── Step 1: Browse Menu (Public Access — no auth required) ───
-
     describe("Step 1: Browse Menu (Public)", () => {
         it("should fetch categories without authentication", async () => {
             const res = await request(app).get("/api/user/categories");
@@ -76,8 +74,6 @@ describe("E2E: Full User Workflow", function () {
         });
     });
 
-    // ─── Step 2: Register ───
-
     describe("Step 2: Register", () => {
         it("should register a new user successfully", async () => {
             const res = await request(app)
@@ -99,13 +95,23 @@ describe("E2E: Full User Workflow", function () {
         });
     });
 
-    // ─── Step 3: Login ───
-
     describe("Step 3: Login", () => {
-        it("should login with correct credentials and return a JWT token", async () => {
+        it("should validate credentials and send OTP", async () => {
             const res = await request(app)
                 .post("/api/user/login")
                 .send({ email: testUser.email, password: testUser.password });
+
+            expect(res.status).to.equal(200);
+            expect(res.body.message).to.equal("OTP sent to your registered email");
+            expect(res.body).to.have.property("requiresOtp", true);
+        });
+
+        it("should verify OTP and return a JWT token", async () => {
+            const user = await User.findOne({ email: testUser.email });
+
+            const res = await request(app)
+                .post("/api/user/verify-otp")
+                .send({ email: testUser.email, otp: user.otp });
 
             expect(res.status).to.equal(200);
             expect(res.body).to.have.property("token");
@@ -113,7 +119,6 @@ describe("E2E: Full User Workflow", function () {
 
             authToken = res.body.token;
 
-            // Decode token to get userId
             const jwt = require("jsonwebtoken");
             const decoded = jwt.decode(authToken);
             userId = decoded.id;
@@ -127,8 +132,6 @@ describe("E2E: Full User Workflow", function () {
             expect(res.status).to.equal(401);
         });
     });
-
-    // ─── Step 4: Add to Cart (requires auth) ───
 
     describe("Step 4: Add to Cart", () => {
         it("should reject adding to cart without a token", async () => {
@@ -170,8 +173,6 @@ describe("E2E: Full User Workflow", function () {
         });
     });
 
-    // ─── Step 5: Place an Order ───
-
     describe("Step 5: Place Order", () => {
         it("should place an order successfully", async () => {
             const res = await request(app)
@@ -197,8 +198,6 @@ describe("E2E: Full User Workflow", function () {
         });
     });
 
-    // ─── Step 6: View Orders ───
-
     describe("Step 6: View Orders", () => {
         it("should fetch the user's orders", async () => {
             const res = await request(app)
@@ -213,8 +212,6 @@ describe("E2E: Full User Workflow", function () {
             expect(found).to.exist;
         });
     });
-
-    // ─── Step 7: Cancel Order ───
 
     describe("Step 7: Cancel Order", () => {
         it("should cancel the order", async () => {
