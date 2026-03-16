@@ -27,10 +27,12 @@ async function setAndSendOtp(user) {
     user.otpExpires = getOtpExpiryDate();
     await user.save();
 
-    await sendLoginOtpEmail({
+    sendLoginOtpEmail({
         to: user.email,
         username: user.name,
         otp
+    }).catch((error) => {
+        console.error(`[OTP Email] Failed for ${user.email}:`, error.message);
     });
 }
 
