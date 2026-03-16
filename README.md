@@ -165,11 +165,11 @@ On macOS/Linux, use `cp` instead of `copy`.
 | Variable | Required | Description | Example |
 | --- | --- | --- | --- |
 | `PORT` | No | Backend server port | `5000` |
-| `MONGO_URI` | Yes | MongoDB connection string | `mongodb://127.0.0.1:27017/pizzahub` |
+| `MONGO_URI` | Yes | MongoDB connection string | `mongodb://127.0.0.1:27017` |
 | `JWT_SECRET` | Yes | JWT signing secret | `replace_with_strong_secret` |
 | `BREVO_API_KEY` | For email flows | Brevo API key for OTP/reset emails | `xkeysib-...` |
 | `EMAIL_FROM` | For email flows | Verified sender email or `Name <email>` | `PizzaHub <noreply@example.com>` |
-| `FRONTEND_URL` | Recommended | Base URL used in password reset links | `http://localhost:5173` |
+| `FRONTEND_URL` | Recommended | Base URL used in password reset links | `http://localhost:5181` |
 | `NODE_ENV` | No | Runtime environment | `development` |
 
 ### Frontend (`frontend/.env`)
@@ -197,7 +197,7 @@ npm run dev
 
 Default local URLs:
 
-- Frontend app: `http://localhost:5173`
+- Frontend app: `http://localhost:5180`
 - Backend API: `http://localhost:5000`
 - Backend health route: `GET http://localhost:5000/`
 
