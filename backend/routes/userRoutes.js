@@ -73,6 +73,8 @@ router.post("/register", auth.registerUser);
 router.post("/login", auth.loginUser);
 router.post("/verify-otp", auth.verifyOtp);
 router.post("/resend-otp", auth.resendOtp);
+router.post("/forgot-password", auth.forgotPassword);
+router.post("/reset-password/:token", auth.resetPassword);
 router.post("/logout", authMiddleware, auth.logoutUser);
 router.get("/profile", authMiddleware, auth.getProfile);
 router.put("/profile", authMiddleware, auth.updateProfile);

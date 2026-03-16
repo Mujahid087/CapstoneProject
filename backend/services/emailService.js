@@ -58,9 +58,18 @@ async function sendLoginOtpEmail({ to, username, otp }) {
     });
 }
 
+async function sendPasswordResetEmail({ to, username, resetLink }) {
+    return sendEmail({
+        to,
+        subject: "PizzaHub Password Reset",
+        text: `Hello ${username},\nWe received a request to reset your PizzaHub password.\n\nReset your password using this link:\n${resetLink}\n\nThis link will expire in 15 minutes.\nIf you did not request this, please ignore this email.`
+    });
+}
+
 module.exports = {
     canSendEmails,
     sendEmail,
     sendWelcomeEmail,
-    sendLoginOtpEmail
+    sendLoginOtpEmail,
+    sendPasswordResetEmail
 };
