@@ -1,11 +1,11 @@
 const Address = require("../models/AddressModel");
 
 
-// Add Address
+
 exports.addAddress = async (req, res) => {
     try {
         if (req.body.isDefault) {
-             // Unset default for all other addresses belonging to this user
+             
              await Address.updateMany({ userId: req.body.userId }, { $set: { isDefault: false } });
         }
 
@@ -20,7 +20,7 @@ exports.addAddress = async (req, res) => {
     }
 };
 
-// Get all addresses of user
+
 exports.getUserAddresses = async (req, res) => {
     try {
         const addresses = await Address.find({ userId: req.params.userId }).sort({ isDefault: -1, createdAt: -1 });
@@ -30,17 +30,17 @@ exports.getUserAddresses = async (req, res) => {
     }
 };
 
-// Update Address
+
 exports.updateAddress = async (req, res) => {
     try {
-        // Find existing address first to get the userId for the $set operation
+        
         const currAddress = await Address.findById(req.params.id);
         if(!currAddress) {
              return res.status(404).json({ message: "Address not found" });
         }
 
         if (req.body.isDefault) {
-             // Unset default for all other addresses belonging to this user
+             
              await Address.updateMany({ userId: currAddress.userId, _id: { $ne: req.params.id } }, { $set: { isDefault: false } });
         }
 
@@ -60,7 +60,7 @@ exports.updateAddress = async (req, res) => {
 };
 
 
-// Delete Address
+
 exports.deleteAddress = async (req, res) => {
 try {
 

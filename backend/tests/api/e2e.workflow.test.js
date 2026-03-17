@@ -6,18 +6,7 @@ const User = require("../../models/User");
 const Cart = require("../../models/CartItemModel");
 const Order = require("../../models/OrderModel");
 
-/**
- * End-to-End Test: Full User Workflow
- *
- * Tests the complete user journey:
- * 1. Browse menu (public, no auth)
- * 2. Register a new account
- * 3. Login with OTP verification
- * 4. Add items to cart
- * 5. Place an order
- * 6. View orders
- * 7. Cancel an order
- */
+
 describe("E2E: Full User Workflow", function () {
     this.timeout(15000);
 
@@ -34,7 +23,7 @@ describe("E2E: Full User Workflow", function () {
     let menuItemId;
     let orderId;
 
-    // Cleanup before and after
+    
     before(async () => {
         await User.deleteMany({ email: testUser.email });
     });

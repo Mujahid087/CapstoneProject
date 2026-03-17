@@ -4,7 +4,7 @@ exports.getNotifications = async (req, res) => {
     try {
         const notifications = await AdminNotification.find()
             .sort({ createdAt: -1 })
-            .limit(50); // Keep payload reasonable
+            .limit(50); 
         res.json(notifications);
     } catch (error) {
         res.status(500).json({ message: error.message });

@@ -1,35 +1,35 @@
-// const router = require("express").Router();
 
-// const adminAuth = require("../controllers/AdminAuthController");
-// const menu = require("../controllers/AdminMenuController");
-// const order = require("../controllers/AdminOrderController");
-// const message = require("../controllers/AdminMessageController");
-// const bill = require("../controllers/AdminBillController");
-// const revenue = require("../controllers/AdminRevenueController");
-// const categoryController = require("../controllers/AdminCategoryController");
 
-// router.post("/login", adminAuth.adminLogin);
-// router.post("/logout", adminAuth.adminLogout);
-// router.get("/users", adminAuth.getAllUsers);
 
-// router.post("/menu", menu.createMenuItem);
-// router.get("/menu", menu.getAllMenuItems);
-// router.put("/menu/:id", menu.updateMenuItem);
-// router.delete("/menu/:id", menu.deleteMenuItem);
 
-// router.post("/category", categoryController.createCategory);
 
-// router.get("/orders", order.getAllOrders);
-// router.put("/orders/:id", order.updateOrderStatus);
 
-// router.post("/message", message.sendMessageToUser);
 
-// router.get("/bill/:orderId", bill.generateBill);
 
-// router.get("/revenue", revenue.getMonthlyRevenue);
-// router.get("/dashboard", revenue.adminDashboard);
 
-// module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 const router = require("express").Router();
@@ -47,7 +47,7 @@ const AdminNotificationController = require("../controllers/AdminNotificationCon
 
 router.post("/login", adminAuth.adminLogin);
 
-// Protected routes
+
 router.post("/logout", authMiddleware, adminAuth.adminLogout);
 router.get("/users", authMiddleware, adminAuth.getAllUsers);
 

@@ -45,13 +45,13 @@ exports.updateOrderStatus = async (req, res) => {
                 message: statusMessages[status]
             });
 
-            // Push notification in real-time if the user is connected
+           
             const io = req.app.get('io');
             if(io) {
-                // Ensure the exact id format is used (string mapping)
+               
                 io.to(order.userId.toString()).emit("new_notification", newMessage);
 
-                // Admin Notification (Internal tracking for delivered events)
+               
                 if (status === "delivered") {
                     AdminNotification.create({
                         eventTitle: "Order Delivered",

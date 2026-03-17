@@ -2,19 +2,19 @@ const Payment = require("../models/PaymentModel");
 const Order = require("../models/OrderModel");
 const AdminNotification = require("../models/AdminNotificationModel");
 
-// Make payment
+
 exports.makePayment = async (req, res) => {
 try {
     const { orderId, paidAmount } = req.body;
 
-    // Fetch the original order
+    
     const order = await Order.findById(orderId);
     
     if (!order) {
         return res.status(404).json({ message: "Order not found" });
     }
 
-    // Server-side validation: Ensure payment amount matches exactly
+    
     const expectedAmount = order.finalPrice || order.totalAmount || (
         order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0) - (order.discountAmount || 0) + (order.deliveryMode === 'delivery' ? 50 : 0) + Math.round(order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 0.05)
     );
@@ -25,10 +25,10 @@ try {
         });
     }
 
-    // Create the payment record
+    
     const payment = await Payment.create(req.body);
 
-    // Update the Order to mark it as Paid
+    
     order.paymentStatus = "paid";
     await order.save();
 

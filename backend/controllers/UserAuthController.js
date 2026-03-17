@@ -43,7 +43,7 @@ async function setAndSendOtp(user) {
     });
 }
 
-// Register
+
 exports.registerUser = async (req, res) => {
     try {
         const { name, email, password, phone } = req.body;
@@ -120,7 +120,7 @@ exports.updateProfile = async (req, res) => {
     }
 };
 
-// Login - Step 1 (credentials validation + OTP send)
+
 exports.loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -173,7 +173,7 @@ exports.loginUser = async (req, res) => {
     }
 };
 
-// Login - Step 2 (OTP verification + JWT issue)
+
 exports.verifyOtp = async (req, res) => {
     try {
         const { email, otp } = req.body;
@@ -260,7 +260,7 @@ exports.forgotPassword = async (req, res) => {
 
         const user = await User.findOne({ email });
 
-        // Always return generic response to avoid email enumeration.
+        
         if (!user) {
             return res.json({
                 message: "If this email is registered, a password reset link has been sent."
@@ -342,7 +342,7 @@ exports.getProfile = async (req, res) => {
     res.json(user);
 };
 
-// Logout
+
 exports.logoutUser = async (req, res) => {
     res.json({
         message: "User logged out successfully"
