@@ -15,18 +15,18 @@ function AdminLayout() {
     const { user, role } = useSelector((state) => state.auth);
 
     useEffect(() => {
-        // Load existing notifications from DB on mount
+        
         dispatch(fetchAdminNotifications());
 
         if (user && role === "admin") {
 
-            // ✅ FIX: emit "join_admin_room" INSIDE the "connect" handler.
-            // socket.connect() is async — emitting immediately after calling it
-            // means the event fires before the handshake completes and the
-            // server never receives it, so the socket never joins admin_room.
+            
+            
+            
+            
             const handleConnect = () => {
                 console.log("[Socket.IO] Admin connected:", socket.id);
-                socket.emit("join_admin_room"); // safe to emit now — connection confirmed
+                socket.emit("join_admin_room"); 
             };
 
             const handleNotification = (notification) => {
@@ -42,16 +42,16 @@ function AdminLayout() {
                 console.warn("[Socket.IO] Admin disconnected:", reason);
             };
 
-            // Register all listeners BEFORE connecting
+            
             socket.on("connect", handleConnect);
             socket.on("new_admin_notification", handleNotification);
             socket.on("disconnect", handleDisconnect);
 
-            // Now connect — "connect" event will fire once ready, which emits join_admin_room
+            
             socket.connect();
         }
 
-        // Cleanup: remove named listeners and disconnect on unmount / logout
+        
         return () => {
             socket.off("connect");
             socket.off("new_admin_notification");

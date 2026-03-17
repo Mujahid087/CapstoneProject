@@ -77,7 +77,7 @@ const orderSlice = createSlice({
   name: "order",
   initialState: {
     orders: [],
-    currentOrder: null, // to store individual order details
+    currentOrder: null, 
     loading: false,
     error: null,
     successMessage: null,

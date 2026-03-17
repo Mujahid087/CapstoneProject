@@ -26,8 +26,8 @@ function AdminNotificationsPage() {
 
     useEffect(() => {
         dispatch(fetchAdminNotifications());
-        // Clean up equivalent - mark notifications as read when the admin enters or leaves the page.
-        // Doing this instantly on load means the notification badge resets just by visiting the page.
+        
+        
         dispatch(markNotificationsRead());
     }, [dispatch]);
 

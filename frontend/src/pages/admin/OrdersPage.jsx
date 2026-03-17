@@ -280,7 +280,7 @@ function OrderTable({ orders, handleStatusChange, handleBill, isCompleted }) {
                     <th>Items</th>
                     <th>Total</th>
                     <th>Status</th>
-                    {/* Only show "Update Status" header if not completed, or alternatively keep it and show disabled dropdowns */}
+                    {}
                     <th>{isCompleted ? "Status Log" : "Update Status"}</th>
                     <th>Actions</th>
                 </tr>

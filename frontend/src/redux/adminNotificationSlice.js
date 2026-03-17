@@ -34,7 +34,7 @@ const adminNotificationSlice = createSlice({
     },
     reducers: {
         receiveAdminNotification(state, action) {
-            // Unshift places the newest real-time notification at the precise top of the array
+            
             state.notifications.unshift(action.payload);
         }
     },
@@ -50,7 +50,7 @@ const adminNotificationSlice = createSlice({
                 state.error = action.payload;
             })
             .addCase(markNotificationsRead.fulfilled, (state) => {
-                // Instantly sync the UI state to all read status without waiting for network re-fetch
+                
                 state.notifications.forEach(n => n.isRead = true);
             })
             .addCase("auth/logout", (state) => {

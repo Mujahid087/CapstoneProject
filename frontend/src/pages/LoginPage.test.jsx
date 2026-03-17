@@ -6,7 +6,7 @@ import { MemoryRouter } from "react-router-dom";
 import { configureStore } from "@reduxjs/toolkit";
 import LoginPage from "./LoginPage";
 
-// Create a mock auth reducer
+
 function createMockStore(overrides = {}) {
   return configureStore({
     reducer: {

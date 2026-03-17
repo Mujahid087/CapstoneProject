@@ -123,7 +123,7 @@ const userSlice = createSlice({
     clearUserError(state) { state.error = null; },
     clearPaymentSuccess(state) { state.paymentSuccess = null; },
     receiveRealTimeMessage(state, action) {
-      // Unshift to place new real-time messages at the top of the feed
+      
       state.messages.unshift(action.payload);
     }
   },

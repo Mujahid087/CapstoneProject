@@ -15,7 +15,7 @@ function PaymentPage() {
     
     const [paymentMode, setPaymentMode] = useState("card");
 
-    // Fetch order details when component mounts
+    
     useEffect(() => {
         dispatch(getOrderById(orderId));
     }, [dispatch, orderId]);
@@ -36,7 +36,7 @@ function PaymentPage() {
         if (!currentOrder) return;
         
         const getFinalAmount = () => {
-             // Prefer finalPrice (or calculate from totalAmount for legacy compatibility)
+             
             if (currentOrder.finalPrice) return currentOrder.finalPrice;
             if (currentOrder.totalAmount) return currentOrder.totalAmount;
 
@@ -57,7 +57,7 @@ function PaymentPage() {
             makePayment({
                 orderId,
                 paymentMode,
-                paidAmount: finalAmountToPay, // Send exactly what the order expects
+                paidAmount: finalAmountToPay, 
                 paymentStatus: "completed",
                 transactionId: `TXN${Date.now()}`,
                 paidAt: new Date(),
@@ -65,7 +65,7 @@ function PaymentPage() {
         );
     };
 
-    // Calculate breakdown for display
+    
     const itemsTotal = currentOrder?.items?.reduce(
         (sum, item) => sum + (item.price || 0) * (item.quantity || 1),
         0
@@ -102,7 +102,7 @@ function PaymentPage() {
                                 </div>
                             ) : currentOrder ? (
                                 <>
-                                    {/* Order Breakdown */}
+                                    {}
                                     <Card className="bg-light border-0 mb-4 p-3">
                                         <h6 className="mb-3 border-bottom pb-2">Order Summary</h6>
                                         <div className="d-flex justify-content-between mb-1">

@@ -7,7 +7,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import LandingPage from "./LandingPage";
 import { ThemeProvider } from "../theme/ThemeContext";
 
-// Mock socket.io-client to prevent connection attempts
+
 jest.mock("socket.io-client", () => ({
   io: jest.fn(() => ({
     emit: jest.fn(),

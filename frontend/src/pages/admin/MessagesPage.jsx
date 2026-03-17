@@ -5,7 +5,7 @@ import { getUserOrders } from "../../redux/orderSlice";
 import { Card, Form, Button, Row, Col, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 
-// Helper to neatly format dates for the dropdown
+
 function formatDateForDropdown(dateStr) {
     const d = new Date(dateStr);
     const day = d.getDate();
@@ -18,7 +18,7 @@ function MessagesPage() {
     const dispatch = useDispatch();
     const { users } = useSelector((state) => state.user);
     
-    // Local state for the selected user and their fetched orders
+    
     const [userId, setUserId] = useState("");
     const [userOrders, setUserOrders] = useState([]);
     const [isFetchingOrders, setIsFetchingOrders] = useState(false);
@@ -26,21 +26,21 @@ function MessagesPage() {
     const [orderId, setOrderId] = useState("");
     const [message, setMessage] = useState("");
 
-    // 1. Initial Load: Fetch all users for the first dropdown
+    
     useEffect(() => {
         dispatch(getAllUsers());
     }, [dispatch]);
 
-    // 2. Dynamic Fetch: When a user selects a user, fetch their orders
+    
     useEffect(() => {
         if (userId) {
             setIsFetchingOrders(true);
-            setOrderId(""); // Reset selected order
+            setOrderId(""); 
             
             dispatch(getUserOrders(userId))
                 .unwrap()
                 .then((orders) => {
-                    // Sort orders newest first
+                    
                     const sorted = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                     setUserOrders(sorted);
                 })
@@ -79,7 +79,7 @@ function MessagesPage() {
                         <Card.Body className="p-4">
                             <Form onSubmit={handleSend}>
                                 
-                                {/* User Dropdown */}
+                                {}
                                 <Form.Group className="mb-4">
                                     <Form.Label className="fw-semibold">Select User</Form.Label>
                                     <Form.Select
@@ -97,7 +97,7 @@ function MessagesPage() {
                                     </Form.Select>
                                 </Form.Group>
 
-                                {/* Dynamic Order Dropdown */}
+                                {}
                                 <Form.Group className="mb-4">
                                     <div className="d-flex justify-content-between align-items-end mb-2">
                                         <Form.Label className="fw-semibold mb-0">Select Related Order (Optional)</Form.Label>
@@ -111,12 +111,12 @@ function MessagesPage() {
                                         disabled={!userId || isFetchingOrders}
                                         className="shadow-sm"
                                     >
-                                        {/* Default / Unassociated Option */}
+                                        {}
                                         <option value="">
                                             {userId ? "General Message (No Specific Order)" : "Select a user first..."}
                                         </option>
                                         
-                                        {/* Populated Orders */}
+                                        {}
                                         {userOrders.map((order) => (
                                             <option key={order._id} value={order._id}>
                                                 Order #{order._id.slice(-8).toUpperCase()} • ₹{order.totalAmount} • {formatDateForDropdown(order.createdAt)}
@@ -130,7 +130,7 @@ function MessagesPage() {
                                     )}
                                 </Form.Group>
 
-                                {/* Message Content Textarea */}
+                                {}
                                 <Form.Group className="mb-4">
                                     <Form.Label className="fw-semibold">Message</Form.Label>
                                     <Form.Control

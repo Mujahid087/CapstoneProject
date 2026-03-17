@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Loader from "./Loader";
 
-// Mock react-bootstrap Spinner
+
 jest.mock("react-bootstrap", () => ({
   Spinner: (props) => <div data-testid="spinner" {...props} />,
 }));

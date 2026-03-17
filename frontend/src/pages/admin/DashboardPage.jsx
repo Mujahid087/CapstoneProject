@@ -15,7 +15,7 @@ function DashboardPage() {
 
     if (loading || !dashboard) return <Loader />;
 
-    // Destructure new data format from backend
+    
     const {
         totalUsers,
         pendingOrders,
@@ -25,7 +25,7 @@ function DashboardPage() {
         ordersTrend
     } = dashboard;
 
-    // KPI Cards configuration
+    
     const stats = [
         { label: "Pending Orders", value: pendingOrders, icon: "⏳", color: "danger" },
         { label: "Orders Today", value: ordersToday, icon: "📦", color: "success" },
@@ -33,7 +33,7 @@ function DashboardPage() {
         { label: "Active Customers", value: totalUsers, icon: "👥", color: "info" },
     ];
 
-    // Status Badge Color Map
+    
     const statusColors = {
         pending: "warning",
         confirmed: "info",
@@ -52,7 +52,7 @@ function DashboardPage() {
                 </Button>
             </div>
 
-            {/* Row 1: KPI Cards */}
+            {}
             <Row>
                 {stats.map((stat, idx) => (
                     <Col md={3} key={idx} className="mb-4">
@@ -74,7 +74,7 @@ function DashboardPage() {
                 ))}
             </Row>
 
-            {/* Row 2: Charts and Quick Info */}
+            {}
             <Row className="mb-4">
                 <Col lg={12}>
                     <Card className="shadow-sm border-0">
@@ -125,7 +125,7 @@ function DashboardPage() {
                 </Col>
             </Row>
 
-            {/* Row 3: Live Orders Table */}
+            {}
             <Row>
                 <Col lg={12}>
                     <Card className="shadow-sm border-0">
