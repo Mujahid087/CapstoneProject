@@ -341,7 +341,7 @@ External services
 ## Live Deployment
 
 - Frontend: https://pizzeria-c9055.web.app
-- Backend: https://capstoneproject-1--0g2z.onrender.com/
+- Backend: https://capstoneproject-1-0g2z.onrender.com
 
 ## Author
 
