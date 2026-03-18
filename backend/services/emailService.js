@@ -2,12 +2,21 @@ function canSendEmails() {
     return Boolean(process.env.BREVO_API_KEY && process.env.EMAIL_FROM);
 }
 
+function isValidEmail(email) {
+    if (typeof email !== "string") return false;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
 async function sendEmail({ to, subject, text }) {
     if (!canSendEmails()) {
         if (process.env.NODE_ENV !== "production") {
             console.warn("[EmailService] BREVO_API_KEY/EMAIL_FROM missing. Skipping email send.");
         }
         return { skipped: true };
+    }
+
+    if (!isValidEmail(to)) {
+        throw new Error("Invalid recipient email format");
     }
 
     const [fromName, fromEmail] = process.env.EMAIL_FROM.includes("<")
