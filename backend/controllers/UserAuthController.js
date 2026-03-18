@@ -9,7 +9,8 @@ const {
     sendPasswordResetEmail
 } = require("../services/emailService");
 
-const OTP_EXPIRY_MINUTES = 5;
+const OTP_EXPIRY_MINUTES = 10;
+const OTP_COOLDOWN_SECONDS = 60;
 const RESET_TOKEN_EXPIRY_MINUTES = 15;
 
 function generateOtp() {
@@ -29,17 +30,30 @@ function generateAuthToken(user) {
 }
 
 async function setAndSendOtp(user) {
+    const now = new Date();
+    const cooldownMs = OTP_COOLDOWN_SECONDS * 1000;
+    const timeSinceLastOtpMs = user.otpLastSentAt
+        ? now.getTime() - user.otpLastSentAt.getTime()
+        : Number.MAX_SAFE_INTEGER;
+
+    if (timeSinceLastOtpMs < cooldownMs) {
+        const retryAfterSeconds = Math.ceil((cooldownMs - timeSinceLastOtpMs) / 1000);
+        const error = new Error(`Please wait ${retryAfterSeconds} seconds before requesting a new OTP`);
+        error.statusCode = 429;
+        error.retryAfterSeconds = retryAfterSeconds;
+        throw error;
+    }
+
     const otp = generateOtp();
     user.otp = otp;
     user.otpExpires = getOtpExpiryDate();
+    user.otpLastSentAt = now;
     await user.save();
 
-    sendLoginOtpEmail({
+    await sendLoginOtpEmail({
         to: user.email,
         username: user.name,
         otp
-    }).catch((error) => {
-        console.error(`[OTP Email] Failed for ${user.email}:`, error.message);
     });
 }
 
@@ -84,6 +98,12 @@ exports.registerUser = async (req, res) => {
             }
         });
     } catch (error) {
+        if (error.statusCode === 429) {
+            return res.status(429).json({
+                message: error.message,
+                retryAfterSeconds: error.retryAfterSeconds
+            });
+        }
         res.status(500).json({ message: error.message });
     }
 };
@@ -144,6 +164,7 @@ exports.loginUser = async (req, res) => {
         if (user.role === "admin") {
             user.otp = null;
             user.otpExpires = null;
+            user.otpLastSentAt = null;
             await user.save();
 
             const token = generateAuthToken(user);
@@ -169,6 +190,12 @@ exports.loginUser = async (req, res) => {
             email: user.email
         });
     } catch (error) {
+        if (error.statusCode === 429) {
+            return res.status(429).json({
+                message: error.message,
+                retryAfterSeconds: error.retryAfterSeconds
+            });
+        }
         res.status(500).json({ message: error.message });
     }
 };
@@ -193,6 +220,7 @@ exports.verifyOtp = async (req, res) => {
         if (isExpired) {
             user.otp = null;
             user.otpExpires = null;
+            user.otpLastSentAt = null;
             await user.save();
             return res.status(400).json({ message: "OTP has expired. Please request a new one." });
         }
@@ -203,6 +231,7 @@ exports.verifyOtp = async (req, res) => {
 
         user.otp = null;
         user.otpExpires = null;
+        user.otpLastSentAt = null;
         await user.save();
 
         const token = generateAuthToken(user);
@@ -212,6 +241,12 @@ exports.verifyOtp = async (req, res) => {
             token
         });
     } catch (error) {
+        if (error.statusCode === 429) {
+            return res.status(429).json({
+                message: error.message,
+                retryAfterSeconds: error.retryAfterSeconds
+            });
+        }
         res.status(500).json({ message: error.message });
     }
 };
@@ -328,6 +363,7 @@ exports.resetPassword = async (req, res) => {
         user.resetPasswordExpires = null;
         user.otp = null;
         user.otpExpires = null;
+        user.otpLastSentAt = null;
         await user.save();
 
         return res.json({ message: "Password reset successful. Please login." });
@@ -337,7 +373,7 @@ exports.resetPassword = async (req, res) => {
 };
 
 exports.getProfile = async (req, res) => {
-    const user = await User.findById(req.user.id).select("-password -otp -otpExpires");
+    const user = await User.findById(req.user.id).select("-password -otp -otpExpires -otpLastSentAt");
 
     res.json(user);
 };
